@@ -218,8 +218,50 @@
         }
 
         .photo-card.completed .photo-icon,
-        .photo-card.completed .photo-desc {
+        .photo-card.completed .photo-desc,
+        .photo-card.completed .photo-buttons {
             display: none;
+        }
+
+        /* Photo Buttons */
+        .photo-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            justify-content: center;
+        }
+
+        .photo-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            flex: 1;
+            max-width: 80px;
+        }
+
+        .gallery-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .gallery-btn:hover {
+            background: var(--primary-light);
+            border-color: var(--accent);
+        }
+
+        .camera-btn {
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            color: white;
+        }
+
+        .camera-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--accent-glow);
         }
 
         /* Input Groups */
@@ -502,44 +544,60 @@
 
             <div class="photo-grid">
                 <!-- Full Body -->
-                <label class="photo-card" id="card-body" for="input-body">
+                <div class="photo-card" id="card-body">
                     <input type="file" id="input-body" accept="image/*" onchange="handlePhoto('body', this)">
                     <div class="photo-status">✓</div>
                     <div class="photo-icon">🧍</div>
                     <div class="photo-label">Full Body</div>
                     <div class="photo-desc">Front view, standing straight</div>
                     <img id="preview-body" class="photo-preview-small">
-                </label>
+                    <div class="photo-buttons">
+                        <button type="button" class="photo-btn gallery-btn" onclick="openGallery('body')">🖼️ Gallery</button>
+                        <button type="button" class="photo-btn camera-btn" onclick="openCamera('body')">📷 Camera</button>
+                    </div>
+                </div>
 
                 <!-- Face Close-up -->
-                <label class="photo-card" id="card-face" for="input-face">
+                <div class="photo-card" id="card-face">
                     <input type="file" id="input-face" accept="image/*" onchange="handlePhoto('face', this)">
                     <div class="photo-status">✓</div>
                     <div class="photo-icon">😊</div>
                     <div class="photo-label">Face Close-up</div>
                     <div class="photo-desc">Natural light, no makeup</div>
                     <img id="preview-face" class="photo-preview-small">
-                </label>
+                    <div class="photo-buttons">
+                        <button type="button" class="photo-btn gallery-btn" onclick="openGallery('face')">🖼️ Gallery</button>
+                        <button type="button" class="photo-btn camera-btn" onclick="openCamera('face')">📷 Camera</button>
+                    </div>
+                </div>
 
                 <!-- Tongue -->
-                <label class="photo-card" id="card-tongue" for="input-tongue">
+                <div class="photo-card" id="card-tongue">
                     <input type="file" id="input-tongue" accept="image/*" onchange="handlePhoto('tongue', this)">
                     <div class="photo-status">✓</div>
                     <div class="photo-icon">👅</div>
                     <div class="photo-label">Tongue</div>
                     <div class="photo-desc">Stick tongue out, natural light</div>
                     <img id="preview-tongue" class="photo-preview-small">
-                </label>
+                    <div class="photo-buttons">
+                        <button type="button" class="photo-btn gallery-btn" onclick="openGallery('tongue')">🖼️ Gallery</button>
+                        <button type="button" class="photo-btn camera-btn" onclick="openCamera('tongue')">📷 Camera</button>
+                    </div>
+                </div>
 
                 <!-- Left Hand -->
-                <label class="photo-card" id="card-hand" for="input-hand">
+                <div class="photo-card" id="card-hand">
                     <input type="file" id="input-hand" accept="image/*" onchange="handlePhoto('hand', this)">
                     <div class="photo-status">✓</div>
                     <div class="photo-icon">✋</div>
                     <div class="photo-label">Left Hand</div>
                     <div class="photo-desc">Fingernails visible, palm down</div>
                     <img id="preview-hand" class="photo-preview-small">
-                </label>
+                    <div class="photo-buttons">
+                        <button type="button" class="photo-btn gallery-btn" onclick="openGallery('hand')">🖼️ Gallery</button>
+                        <button type="button" class="photo-btn camera-btn" onclick="openCamera('hand')">📷 Camera</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Biomarkers Preview -->
@@ -777,6 +835,20 @@
 
             // Show biomarkers preview
             document.getElementById('biomarkersPreview').style.display = 'grid';
+        }
+
+        // Open gallery for specific photo type
+        function openGallery(type) {
+            const input = document.getElementById(`input-${type}`);
+            input.removeAttribute('capture');
+            input.click();
+        }
+
+        // Open camera for specific photo type
+        function openCamera(type) {
+            const input = document.getElementById(`input-${type}`);
+            input.setAttribute('capture', 'environment');
+            input.click();
         }
 
         function calculateBMI() {
