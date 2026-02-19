@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIDESING Longevity Pro - Multi-Biomarker Analysis</title>
+    <script src="https://unpkg.com/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+    <script src="https://unpkg.com/@tensorflow-models/posenet@2.2.2/dist/posenet.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --accent: #00d4ff;
+            --accent-glow: rgba(0, 212, 255, 0.3);
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --bg-dark: #0a0e1a;
+            --bg-card: #111827;
+            --bg-input: #1a202c;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --border: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+
+        .header {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .logo-main {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-sub {
+            font-size: 12px;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            color: var(--bg-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background: var(--bg-input);
+            border-radius: 10px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .form-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-number {
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--bg-dark);
+        }
+
+        .section-number.completed {
+            background: var(--success);
+        }
+
+        /* Photo Upload Cards */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .photo-card {
+            background: var(--bg-input);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .photo-card:hover {
+            border-color: var(--accent);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .photo-card.completed {
+            border-color: var(--success);
+            border-style: solid;
+            background: rgba(72, 187, 120, 0.1);
+        }
+
+        .photo-card input[type="file"] {
+            display: none;
+        }
+
+        .photo-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .photo-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .photo-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .photo-status {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            background: var(--success);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .photo-card.completed .photo-status {
+            display: flex;
+        }
+
+        .photo-preview-small {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin: 8px auto;
+            display: none;
+        }
+
+        .photo-card.completed .photo-preview-small {
+            display: block;
+        }
+
+        .photo-card.completed .photo-icon,
+        .photo-card.completed .photo-desc {
+            display: none;
+        }
+
+        /* Input Groups */
+        .input-group { margin-bottom: 16px; }
+        
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Biomarkers Preview */
+        .biomarkers-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .biomarker-item {
+            background: var(--bg-input);
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        .biomarker-name {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .biomarker-score {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 4px 0;
+        }
+
+        .biomarker-bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .biomarker-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        /* Calculate Button */
+        .calculate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            margin-top: 10px;
+        }
+
+        .calculate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+
+        .calculate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Results */
+        .results-section {
+            display: none;
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .results-section.show { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .age-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 24px 0;
+        }
+
+        .age-box { text-align: center; }
+
+        .age-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .age-value {
+            font-size: 42px;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+
+        .age-value.chrono { color: var(--text-secondary); }
+        
+        .age-value.bio {
+            background: linear-gradient(135deg, var(--accent), #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .age-diff {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .age-diff.younger {
+            background: rgba(72, 187, 120, 0.2);
+            color: var(--success);
+        }
+
+        .age-diff.older {
+            background: rgba(245, 101, 101, 0.2);
+            color: var(--danger);
+        }
+
+        /* Detailed Results */
+        .results-grid {
+            display: grid;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .result-category {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .result-category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .result-category-icon {
+            font-size: 24px;
+        }
+
+        .result-category-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .result-category-score {
+            margin-left: auto;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .result-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item-name {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .result-item-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .result-item-value.good { color: var(--success); }
+        .result-item-value.warning { color: var(--warning); }
+        .result-item-value.danger { color: var(--danger); }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .photo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .biomarkers-preview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">🧬</div>
+                <div>
+                    <div class="logo-main">AIDESING</div>
+                    <div class="logo-sub">LONGEVITY PRO</div>
+                </div>
+            </div>
+            <div class="badge">🤖 AI Multi-Biomarker</div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+            </div>
+            <div style="text-align: center; font-size: 12px; color: var(--text-muted);">
+                Progress: <span id="progressText">0/5 photos</span>
+            </div>
+        </header>
+
+        <!-- Photo Upload Section -->
+        <section class="form-section">
+            <h2 class="section-title">
+                <span class="section-number" id="num1">1</span>
+                Multi-Photo Biomarker Analysis
+            </h2>
+            
+            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">
+                Take or upload photos for comprehensive health analysis. Each photo reveals different biomarkers.
+            </p>
+
+            <div class="photo-grid">
+                <!-- Full Body -->
+                <label class="photo-card" id="card-body" for="input-body">
+                    <input type="file" id="input-body" accept="image/*" onchange="handlePhoto('body', this)">
+                    <div class="photo-status">✓</div>
+                    <div class="photo-icon">🧍</div>
+                    <div class="photo-label">Full Body</div>
+                    <div class="photo-desc">Front view, standing straight</div>
+                    <img id="preview-body" class="photo-preview-small">
+                </label>
+
+                <!-- Face Close-up -->
+                <label class="photo-card" id="card-face" for="input-face">
+                    <input type="file" id="input-face" accept="image/*" onchange="handlePhoto('face', this)">
+                    <div class="photo-status">✓</div>
+                    <div class="photo-icon">😊</div>
+                    <div class="photo-label">Face Close-up</div>
+                    <div class="photo-desc">Natural light, no makeup</div>
+                    <img id="preview-face" class="photo-preview-small">
+                </label>
+
+                <!-- Tongue -->
+                <label class="photo-card" id="card-tongue" for="input-tongue">
+                    <input type="file" id="input-tongue" accept="image/*" onchange="handlePhoto('tongue', this)">
+                    <div class="photo-status">✓</div>
+                    <div class="photo-icon">👅</div>
+                    <div class="photo-label">Tongue</div>
+                    <div class="photo-desc">Stick tongue out, natural light</div>
+                    <img id="preview-tongue" class="photo-preview-small">
+                </label>
+
+                <!-- Left Hand -->
+                <label class="photo-card" id="card-hand" for="input-hand">
+                    <input type="file" id="input-hand" accept="image/*" onchange="handlePhoto('hand', this)">
+                    <div class="photo-status">✓</div>
+                    <div class="photo-icon">✋</div>
+                    <div class="photo-label">Left Hand</div>
+                    <div class="photo-desc">Fingernails visible, palm down</div>
+                    <img id="preview-hand" class="photo-preview-small">
+                </label>
+            </div>
+
+            <!-- Biomarkers Preview -->
+            <div class="biomarkers-preview" id="biomarkersPreview" style="display: none;">
+                <div class="biomarker-item">
+                    <div class="biomarker-name">Posture</div>
+                    <div class="biomarker-score" id="score-posture">--</div>
+                    <div class="biomarker-bar"><div class="biomarker-fill" id="fill-posture" style="width: 0%"></div></div>
+                </div>
+                <div class="biomarker-item">
+                    <div class="biomarker-name">Skin Age</div>
+                    <div class="biomarker-score" id="score-skin">--</div>
+                    <div class="biomarker-bar"><div class="biomarker-fill" id="fill-skin" style="width: 0%"></div></div>
+                </div>
+                <div class="biomarker-item">
+                    <div class="biomarker-name">Tongue Health</div>
+                    <div class="biomarker-score" id="score-tongue">--</div>
+                    <div class="biomarker-bar"><div class="biomarker-fill" id="fill-tongue" style="width: 0%"></div></div>
+                </div>
+                <div class="biomarker-item">
+                    <div class="biomarker-name">Nail Health</div>
+                    <div class="biomarker-score" id="score-nail">--</div>
+                    <div class="biomarker-bar"><div class="biomarker-fill" id="fill-nail" style="width: 0%"></div></div>
+                </div>
+                <div class="biomarker-item">
+                    <div class="biomarker-name">BMI</div>
+                    <div class="biomarker-score" id="score-bmi">--</div>
+                    <div class="biomarker-bar"><div class="biomarker-fill" id="fill-bmi" style="width: 0%"></div></div>
+                </div>
+                <div class="biomarker-item">
+                    <div class="biomarker-name">Metabolic</div>
+                    <div class="biomarker-score" id="score-metabolic">--</div>
+                    <div class="biomarker-bar"><div class="biomarker-fill" id="fill-metabolic" style="width: 0%"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Basic Info -->
+        <section class="form-section">
+            <h2 class="section-title">
+                <span class="section-number" id="num2">2</span>
+                Basic Information
+            </h2>
+            
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Age (years)</label>
+                    <input type="number" id="age" min="18" max="100" value="40">
+                </div>
+                <div class="input-group">
+                    <label>Gender</label>
+                    <select id="gender">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Weight (kg)</label>
+                    <input type="number" id="weight" min="30" max="200" value="75" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>Height (cm)</label>
+                    <input type="number" id="height" min="100" max="250" value="175">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Waist (cm)</label>
+                    <input type="number" id="waist" min="50" max="150" value="85" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>Hip (cm)</label>
+                    <input type="number" id="hip" min="50" max="150" value="95" step="0.1">
+                </div>
+            </div>
+        </section>
+
+        <!-- Lifestyle -->
+        <section class="form-section">
+            <h2 class="section-title">
+                <span class="section-number" id="num3">3</span>
+                Lifestyle Factors
+            </h2>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Exercise (days/week)</label>
+                    <input type="number" id="exercise" min="0" max="7" value="3">
+                </div>
+                <div class="input-group">
+                    <label>Sleep (hours)</label>
+                    <input type="number" id="sleep" min="4" max="12" step="0.5" value="7">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Smoking</label>
+                    <select id="smoking">
+                        <option value="0">Never</option>
+                        <option value="1">Former</option>
+                        <option value="2">Occasional</option>
+                        <option value="3">Daily</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Stress Level</label>
+                    <select id="stress">
+                        <option value="1">Low</option>
+                        <option value="2">Moderate</option>
+                        <option value="3">High</option>
+                        <option value="4">Very High</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <button class="calculate-btn" id="calculateBtn" onclick="calculateMultiBiomarkerAge()" disabled>
+            🤖 Calculate AI Biological Age (Upload at least 2 photos)
+        </button>
+
+        <!-- Results -->
+        <section class="results-section" id="results">
+            <h2 style="text-align: center; margin-bottom: 24px;">Your Comprehensive Health Analysis</h2>
+
+            <div class="age-display">
+                <div class="age-box">
+                    <div class="age-label">Chronological</div>
+                    <div class="age-value chrono" id="resultChrono">40</div>
+                </div>
+                <div style="font-size: 32px;">→</div>
+                <div class="age-box">
+                    <div class="age-label">Biological</div>
+                    <div class="age-value bio" id="resultBio">38</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 30px;">
+                <span class="age-diff younger" id="ageDiff">2 years younger ✓</span>
+            </div>
+
+            <div class="results-grid" id="resultsGrid">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Multi-Biomarker Analysis | AIDESING SMART SOLUTIONS © 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        // Store uploaded photos
+        const photos = {
+            body: null,
+            face: null,
+            tongue: null,
+            hand: null
+        };
+
+        // Biomarker scores
+        const biomarkers = {
+            posture: null,
+            skin: null,
+            tongue: null,
+            nail: null,
+            bmi: null,
+            metabolic: null
+        };
+
+        // Handle photo upload
+        function handlePhoto(type, input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // Store photo
+                photos[type] = e.target.result;
+
+                // Show preview
+                const preview = document.getElementById(`preview-${type}`);
+                preview.src = e.target.result;
+
+                // Mark card as completed
+                const card = document.getElementById(`card-${type}`);
+                card.classList.add('completed');
+
+                // Simulate biomarker analysis
+                analyzeBiomarker(type);
+
+                // Update progress
+                updateProgress();
+
+                // Enable calculate button if at least 2 photos
+                const photoCount = Object.values(photos).filter(p => p !== null).length;
+                const btn = document.getElementById('calculateBtn');
+                btn.disabled = photoCount < 2;
+                btn.textContent = photoCount >= 2 
+                    ? `🤖 Calculate AI Biological Age (${photoCount} photos)`
+                    : `🤖 Calculate AI Biological Age (Upload at least 2 photos)`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Simulate biomarker analysis based on photo type
+        function analyzeBiomarker(type) {
+            // Simulate AI analysis with random scores for demo
+            // In production, this would use actual ML models
+            
+            switch(type) {
+                case 'body':
+                    biomarkers.posture = Math.floor(Math.random() * 20) + 75; // 75-95
+                    biomarkers.bmi = calculateBMI();
+                    updateBiomarkerUI('posture', biomarkers.posture);
+                    updateBiomarkerUI('bmi', biomarkers.bmi);
+                    break;
+                case 'face':
+                    biomarkers.skin = Math.floor(Math.random() * 25) + 70; // 70-95
+                    updateBiomarkerUI('skin', biomarkers.skin);
+                    break;
+                case 'tongue':
+                    biomarkers.tongue = Math.floor(Math.random() * 30) + 65; // 65-95
+                    updateBiomarkerUI('tongue', biomarkers.tongue);
+                    break;
+                case 'hand':
+                    biomarkers.nail = Math.floor(Math.random() * 25) + 70; // 70-95
+                    updateBiomarkerUI('nail', biomarkers.nail);
+                    break;
+            }
+
+            // Show biomarkers preview
+            document.getElementById('biomarkersPreview').style.display = 'grid';
+        }
+
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById('weight').value) || 75;
+            const height = parseFloat(document.getElementById('height').value) || 175;
+            const heightM = height / 100;
+            const bmi = weight / (heightM * heightM);
+            
+            // Convert BMI to score (18.5-25 is optimal = 90-100)
+            if (bmi >= 18.5 && bmi <= 25) return Math.floor(90 + (25 - bmi) * 2);
+            if (bmi < 18.5) return Math.floor(70 + bmi * 2);
+            return Math.floor(Math.max(50, 100 - (bmi - 25) * 3));
+        }
+
+        function updateBiomarkerUI(type, score) {
+            const scoreEl = document.getElementById(`score-${type}`);
+            const fillEl = document.getElementById(`fill-${type}`);
+            
+            if (scoreEl) {
+                scoreEl.textContent = score;
+                fillEl.style.width = `${score}%`;
+                
+                // Color based on score
+                if (score >= 85) fillEl.style.background = 'var(--success)';
+                else if (score >= 70) fillEl.style.background = 'var(--warning)';
+                else fillEl.style.background = 'var(--danger)';
+            }
+        }
+
+        function updateProgress() {
+            const photoCount = Object.values(photos).filter(p => p !== null).length;
+            const progress = (photoCount / 4) * 100;
+            
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `${photoCount}/4 photos`;
+            
+            // Update section numbers
+            if (photoCount >= 1) document.getElementById('num1').classList.add('completed');
+        }
+
+        // Calculate biological age with multi-biomarker analysis
+        function calculateMultiBiomarkerAge() {
+            const btn = document.getElementById('calculateBtn');
+            btn.disabled = true;
+            btn.textContent = '🤖 Analyzing all biomarkers...';
+
+            setTimeout(() => {
+                const age = parseInt(document.getElementById('age').value);
+                const gender = document.getElementById('gender').value;
+                const weight = parseFloat(document.getElementById('weight').value);
+                const height = parseFloat(document.getElementById('height').value);
+                const waist = parseFloat(document.getElementById('waist').value);
+                const hip = parseFloat(document.getElementById('hip').value);
+                const exercise = parseInt(document.getElementById('exercise').value);
+                const sleep = parseFloat(document.getElementById('sleep').value);
+                const smoking = parseInt(document.getElementById('smoking').value);
+                const stress = parseInt(document.getElementById('stress').value);
+
+                // Calculate base biological age
+                let bioAge = age;
+
+                // BMI adjustment
+                const heightM = height / 100;
+                const bmi = weight / (heightM * heightM);
+                if (bmi < 18.5) bioAge += 1.5;
+                else if (bmi > 30) bioAge += 3.0;
+                else if (bmi > 25) bioAge += 1.0;
+                else if (bmi >= 22 && bmi <= 25) bioAge -= 1.0;
+
+                // WHR adjustment
+                const whr = waist / hip;
+                if (gender === 'male' && whr > 0.95) bioAge += 1.5;
+                else if (gender === 'female' && whr > 0.85) bioAge += 1.5;
+
+                // Lifestyle adjustments
+                bioAge -= (exercise / 7) * 2;
+                if (sleep >= 7 && sleep <= 9) bioAge -= 1.5;
+                else if (sleep < 6) bioAge += 1.5;
+                
+                const smokingPenalty = [0, 1.5, 3.0, 5.0];
+                bioAge += smokingPenalty[smoking];
+                
+                bioAge += (stress - 1) * 0.5;
+
+                // Photo biomarker adjustments
+                if (biomarkers.posture) bioAge -= (biomarkers.posture - 75) / 25;
+                if (biomarkers.skin) bioAge -= (biomarkers.skin - 70) / 30;
+                if (biomarkers.tongue) bioAge -= (biomarkers.tongue - 65) / 35;
+                if (biomarkers.nail) bioAge -= (biomarkers.nail - 70) / 30;
+
+                // Calculate metabolic score
+                biomarkers.metabolic = Math.floor((biomarkers.bmi || 75) * 0.3 + (100 - smokingPenalty[smoking] * 10) * 0.7);
+
+                // Results
+                const ageDiff = bioAge - age;
+
+                // Update UI
+                document.getElementById('resultChrono').textContent = age;
+                document.getElementById('resultBio').textContent = Math.round(bioAge);
+                
+                const diffEl = document.getElementById('ageDiff');
+                if (ageDiff < 0) {
+                    diffEl.textContent = `${Math.round(Math.abs(ageDiff))} years younger ✓`;
+                    diffEl.className = 'age-diff younger';
+                } else {
+                    diffEl.textContent = `${Math.round(ageDiff)} years older`;
+                    diffEl.className = 'age-diff older';
+                }
+
+                // Populate detailed results
+                populateResults();
+
+                // Show results
+                document.getElementById('results').classList.add('show');
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+
+                // Reset button
+                btn.disabled = false;
+                btn.textContent = '🤖 Calculate AI Biological Age';
+
+            }, 2000);
+        }
+
+        function populateResults() {
+            const resultsGrid = document.getElementById('resultsGrid');
+            
+            const categories = [
+                {
+                    icon: '🧍',
+                    title: 'Body Composition',
+                    score: biomarkers.bmi || 75,
+                    items: [
+                        { name: 'BMI', value: biomarkers.bmi || 75, unit: 'score' },
+                        { name: 'Posture', value: biomarkers.posture || '--', unit: 'score' },
+                        { name: 'Body Symmetry', value: Math.floor((biomarkers.posture || 75) * 0.95), unit: 'score' }
+                    ]
+                },
+                {
+                    icon: '😊',
+                    title: 'Facial Analysis',
+                    score: biomarkers.skin || 75,
+                    items: [
+                        { name: 'Skin Age', value: biomarkers.skin || '--', unit: 'score' },
+                        { name: 'Skin Quality', value: Math.floor((biomarkers.skin || 75) * 0.9), unit: 'score' },
+                        { name: 'Hydration Estimate', value: Math.floor((biomarkers.skin || 75) * 0.85), unit: 'score' }
+                    ]
+                },
+                {
+                    icon: '👅',
+                    title: 'Tongue Diagnosis (TCM)',
+                    score: biomarkers.tongue || 75,
+                    items: [
+                        { name: 'Tongue Health', value: biomarkers.tongue || '--', unit: 'score' },
+                        { name: 'Circulation', value: Math.floor((biomarkers.tongue || 75) * 0.92), unit: 'score' },
+                        { name: 'Digestion', value: Math.floor((biomarkers.tongue || 75) * 0.88), unit: 'score' }
+                    ]
+                },
+                {
+                    icon: '✋',
+                    title: 'Nail Analysis',
+                    score: biomarkers.nail || 75,
+                    items: [
+                        { name: 'Nail Health', value: biomarkers.nail || '--', unit: 'score' },
+                        { name: 'Nutrition Status', value: Math.floor((biomarkers.nail || 75) * 0.9), unit: 'score' },
+                        { name: 'Circulation', value: Math.floor((biomarkers.nail || 75) * 0.85), unit: 'score' }
+                    ]
+                },
+                {
+                    icon: '⚡',
+                    title: 'Metabolic Health',
+                    score: biomarkers.metabolic || 75,
+                    items: [
+                        { name: 'Metabolic Score', value: biomarkers.metabolic || '--', unit: 'score' },
+                        { name: 'Cardiovascular', value: Math.floor((biomarkers.metabolic || 75) * 0.95), unit: 'score' },
+                        { name: 'Energy Level', value: Math.floor((biomarkers.metabolic || 75) * 0.9), unit: 'score' }
+                    ]
+                }
+            ];
+
+            resultsGrid.innerHTML = categories.map(cat => `
+                <div class="result-category">
+                    <div class="result-category-header">
+                        <span class="result-category-icon">${cat.icon}</span>
+                        <span class="result-category-title">${cat.title}</span>
+                        <span class="result-category-score">${cat.score}</span>
+                    </div>
+                    <div class="result-items">
+                        ${cat.items.map(item => {
+                            const valueClass = item.value >= 85 ? 'good' : item.value >= 70 ? 'warning' : 'danger';
+                            return `
+                                <div class="result-item">
+                                    <span class="result-item-name">${item.name}</span>
+                                    <span class="result-item-value ${valueClass}">${item.value} ${item.unit}</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
