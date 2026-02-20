@@ -5,8 +5,8 @@ const SUPABASE_CONFIG = {
     // Your Supabase project URL
     url: 'https://lbqaeoqzflldiwtxlecd.supabase.co',
     
-    // Your Supabase anon/public key - NEEDS TO BE REPLACED WITH REAL KEY
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder-replace-with-real-key',
+    // Your Supabase anon/public key
+    anonKey: 'sb_publishable_HfK2VZMmAglXlZm9dCKz_g_nOwI3RSH',
     
     // Optional: Service role key (only for server-side operations)
     // serviceKey: 'your-service-key-here'
