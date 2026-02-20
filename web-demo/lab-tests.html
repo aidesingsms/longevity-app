@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIDESING Longevity - Medical Lab Tests</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="supabase-config.js"></script>
+    <script src="ui-components.js"></script>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --accent: #00d4ff;
+            --accent-glow: rgba(0, 212, 255, 0.3);
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --purple: #9f7aea;
+            --pink: #ed64a6;
+            --bg-dark: #0a0e1a;
+            --bg-card: #111827;
+            --bg-input: #1a202c;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --border: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar-logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .sidebar-logo-text {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .sidebar-logo-sub {
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .nav-section {
+            margin-bottom: 32px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding-left: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+            text-decoration: none;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 212, 255, 0.05));
+            border: 1px solid var(--accent);
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-item span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 32px;
+            max-width: 1400px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header-title h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            color: white;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #38a169);
+            color: white;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Request Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .form-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .form-section.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section-title i {
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        label .required {
+            color: var(--danger);
+            margin-left: 4px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23718096' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        /* Test Categories */
+        .test-categories {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .test-category {
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .test-category:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .test-category.selected {
+            border-color: var(--accent);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .test-category-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .test-category-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* Test Items */
+        .test-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .test-item:hover {
+            background: var(--border);
+        }
+
+        .test-item.selected {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--accent);
+        }
+
+        .test-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .test-item-info {
+            flex: 1;
+        }
+
+        .test-item-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .test-item-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .test-item-price {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* Provider Selection */
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .provider-card {
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .provider-card:hover {
+            border-color: var(--accent);
+        }
+
+        .provider-card.selected {
+            border-color: var(--accent);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .provider-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .provider-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .provider-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .provider-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .provider-details {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Tracking Cards */
+        .tracking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .tracking-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .tracking-card:hover {
+            border-color: var(--accent);
+        }
+
+        .tracking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .tracking-id {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        .tracking-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tracking-status.pending {
+            background: rgba(237, 137, 54, 0.2);
+            color: var(--warning);
+        }
+
+        .tracking-status.scheduled {
+            background: rgba(0, 212, 255, 0.2);
+            color: var(--accent);
+        }
+
+        .tracking-status.in-progress {
+            background: rgba(159, 122, 234, 0.2);
+            color: var(--purple);
+        }
+
+        .tracking-status.completed {
+            background: rgba(72, 187, 120, 0.2);
+            color: var(--success);
+        }
+
+        .tracking-tests {
+            margin-bottom: 16px;
+        }
+
+        .tracking-tests h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .tracking-tests ul {
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .tracking-tests li {
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .tracking-tests li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        .tracking-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .tracking-provider {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .tracking-date {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .tracking-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        /* Results Section */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .result-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 12px 0;
+        }
+
+        .result-value.normal { color: var(--success); }
+        .result-value.warning { color: var(--warning); }
+        .result-value.danger { color: var(--danger); }
+
+        .result-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .result-range {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Summary Card */
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar { width: 240px; }
+            .main-content { margin-left: 240px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .test-categories { grid-template-columns: repeat(2, 1fr); }
+            .results-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .test-categories { grid-template-columns: 1fr; }
+            .provider-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: flex-start; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">🧬</div>
+                <div>
+                    <div class="sidebar-logo-text">AIDESING</div>
+                    <div class="sidebar-logo-sub">Longevity Pro</div>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Overview</div>
+                
+                <a href="unified-dashboard.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                
+                <a href="multi-biomarker.html" class="nav-item">
+                    <i class="fas fa-microscope"></i>
+                    <span>Biomarkers</span>
+                </a>
+                
+                <a href="wearable-integration.html" class="nav-item">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Wearables</span>
+                </a>
+                
+                <a href="digital-twin.html" class="nav-item">
+                    <i class="fas fa-cube"></i>
+                    <span>Digital Twin</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Health Services</div>
+                
+                <a href="lab-tests.html" class="nav-item active">
+                    <i class="fas fa-flask"></i>
+                    <span>Lab Tests</span>
+                </a>
+                
+                <a href="wearable-connect.html" class="nav-item">
+                    <i class="fas fa-watch"></i>
+                    <span>Connect Device</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                
+                <a href="#" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                
+                <a href="#" class="nav-item" onclick="logout(); return false;" style="color: var(--danger);">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-title">
+                    <h1>Medical Lab Tests</h1>
+                    <p>Request and track your medical examinations</p>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="showTab('tracking')">
+                        <i class="fas fa-history"></i> My Requests
+                    </button>
+                    <button class="btn btn-primary" onclick="showTab('request')">
+                        <i class="fas fa-plus"></i> New Request
+                    </button>
+                </div>
+            </header>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('request')" data-tab="request">
+                    <i class="fas fa-flask"></i> Request Tests
+                </button>
+                <button class="tab" onclick="showTab('tracking')" data-tab="tracking">
+                    <i class="fas fa-clipboard-list"></i> Track Requests
+                </button>
+                <button class="tab" onclick="showTab('results')" data-tab="results">
+                    <i class="fas fa-chart-bar"></i> View Results
+                </button>
+            </div>
+
+            <!-- Request Tab -->
+            <div class="tab-content active" id="request-tab">
+                <form id="labRequestForm" class="form-grid">
+                    <!-- Test Categories -->
+                    <div class="form-section full-width">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-vials"></i>
+                            Select Test Categories
+                        </h3>
+                        <div class="test-categories">
+                            <div class="test-category" data-category="blood" onclick="selectCategory(this)">
+                                <div class="test-category-icon">🩸</div>
+                                <div class="test-category-name">Blood Work</div>
+                            </div>
+                            <div class="test-category" data-category="urine" onclick="selectCategory(this)">
+                                <div class="test-category-icon">💧</div>
+                                <div class="test-category-name">Urine Analysis</div>
+                            </div>
+                            <div class="test-category" data-category="imaging" onclick="selectCategory(this)">
+                                <div class="test-category-icon">🩻</div>
+                                <div class="test-category-name">Imaging</div>
+                            </div>
+                            <div class="test-category" data-category="cardiac" onclick="selectCategory(this)">
+                                <div class="test-category-icon">❤️</div>
+                                <div class="test-category-name">Cardiac</div>
+                            </div>
+                            <div class="test-category" data-category="hormone" onclick="selectCategory(this)">
+                                <div class="test-category-icon">⚗️</div>
+                                <div class="test-category-name">Hormone Panel</div>
+                            </div>
+                            <div class="test-category" data-category="genetic" onclick="selectCategory(this)">
+                                <div class="test-category-icon">🧬</div>
+                                <div class="test-category-name">Genetic</div>
+                            </div>
+                        </div>
+
+                        <!-- Test Items -->
+                        <div class="test-items" id="testItems" style="display: none;">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Provider Selection -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-hospital"></i>
+                            Select Provider
+                        </h3>
+                        <div class="provider-grid">
+                            <div class="provider-card" data-provider="quest" onclick="selectProvider(this)">
+                                <div class="provider-header">
+                                    <div class="provider-logo">🔬</div>
+                                    <div class="provider-info">
+                                        <h4>Quest Diagnostics</h4>
+                                        <p>Nationwide Network</p>
+                                    </div>
+                                </div>
+                                <div class="provider-details">
+                                    • 2,200+ locations<br>
+                                    • Same-day appointments<br>
+                                    • Results in 24-48hrs
+                                </div>
+                            </div>
+                            <div class="provider-card" data-provider="labcorp" onclick="selectProvider(this)">
+                                <div class="provider-header">
+                                    <div class="provider-logo">🧪</div>
+                                    <div class="provider-info">
+                                        <h4>Labcorp</h4>
+                                        <p>National Laboratory</p>
+                                    </div>
+                                </div>
+                                <div class="provider-details">
+                                    • 2,000+ locations<br>
+                                    • Walk-ins welcome<br>
+                                    • Online results portal
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appointment Details -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Appointment Details
+                        </h3>
+                        <div class="form-group">
+                            <label>Preferred Date <span class="required">*</span></label>
+                            <input type="date" id="appointmentDate" required min="">
+                        </div>
+                        <div class="form-group">
+                            <label>Preferred Time</label>
+                            <select id="appointmentTime">
+                                <option value="morning">Morning (8AM - 12PM)</option>
+                                <option value="afternoon">Afternoon (12PM - 5PM)</option>
+                                <option value="evening">Evening (5PM - 8PM)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fasting Required?</label>
+                            <select id="fastingRequired">
+                                <option value="no">No fasting needed</option>
+                                <option value="8hr">8-hour fast</option>
+                                <option value="12hr">12-hour fast</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Insurance & Notes -->
+                    <div class="form-section full-width">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-file-medical"></i>
+                            Additional Information
+                        </h3>
+                        <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                            <div class="form-group">
+                                <label>Insurance Provider</label>
+                                <input type="text" id="insuranceProvider" placeholder="e.g., Blue Cross Blue Shield">
+                            </div>
+                            <div class="form-group">
+                                <label>Policy Number</label>
+                                <input type="text" id="policyNumber" placeholder="XXX-XXX-XXX">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Special Instructions / Notes</label>
+                            <textarea id="specialNotes" placeholder="Any specific requirements, allergies, or information the lab should know..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="form-section full-width" style="text-align: right;">
+                        <button type="submit" class="btn btn-primary" style="min-width: 200px;">
+                            <i class="fas fa-paper-plane"></i> Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tracking Tab -->
+            <div class="tab-content" id="tracking-tab">
+                <div class="tracking-list" id="trackingList">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Results Tab -->
+            <div class="tab-content" id="results-tab">
+                <div class="results-grid" id="resultsGrid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Current user
+        let CURRENT_USER_ID = localStorage.getItem('longevity_user_id');
+        
+        // Check authentication
+        if (!CURRENT_USER_ID) {
+            window.location.href = 'login.html';
+        }
+
+        // Test database
+        const TEST_DATABASE = {
+            blood: [
+                { id: 'cbc', name: 'Complete Blood Count (CBC)', desc: 'Red/white blood cells, platelets', price: '$35' },
+                { id: 'lipid', name: 'Lipid Panel', desc: 'Cholesterol, HDL, LDL, triglycerides', price: '$45' },
+                { id: 'glucose', name: 'Fasting Glucose', desc: 'Blood sugar levels', price: '$25' },
+                { id: 'hba1c', name: 'HbA1c', desc: '3-month glucose average', price: '$40' },
+                { id: 'crp', name: 'C-Reactive Protein', desc: 'Inflammation marker', price: '$55' },
+                { id: 'liver', name: 'Liver Function Panel', desc: 'ALT, AST, bilirubin, albumin', price: '$50' },
+                { id: 'kidney', name: 'Kidney Function Panel', desc: 'Creatinine, BUN, eGFR', price: '$45' },
+                { id: 'thyroid', name: 'Thyroid Panel (TSH, T3, T4)', desc: 'Thyroid hormone levels', price: '$85' }
+            ],
+            urine: [
+                { id: 'urinalysis', name: 'Complete Urinalysis', desc: 'pH, protein, glucose, ketones', price: '$30' },
+                { id: 'microalbumin', name: 'Microalbumin', desc: 'Early kidney disease detection', price: '$40' }
+            ],
+            imaging: [
+                { id: 'chest-xray', name: 'Chest X-Ray', desc: 'Lung and heart imaging', price: '$150' },
+                { id: 'dexa', name: 'DEXA Scan', desc: 'Bone density measurement', price: '$200' },
+                { id: 'ultrasound', name: 'Abdominal Ultrasound', desc: 'Organs and blood flow', price: '$300' }
+            ],
+            cardiac: [
+                { id: 'ecg', name: 'Electrocardiogram (ECG/EKG)', desc: 'Heart rhythm and electrical activity', price: '$75' },
+                { id: 'echo', name: 'Echocardiogram', desc: 'Heart ultrasound imaging', price: '$450' },
+                { id: 'stress', name: 'Cardiac Stress Test', desc: 'Exercise heart performance', price: '$350' }
+            ],
+            hormone: [
+                { id: 'testosterone', name: 'Testosterone Panel', desc: 'Total and free testosterone', price: '$95' },
+                { id: 'estrogen', name: 'Estrogen Panel', desc: 'Estradiol, progesterone', price: '$110' },
+                { id: 'cortisol', name: 'Cortisol', desc: 'Stress hormone levels', price: '$65' },
+                { id: 'vitamind', name: 'Vitamin D, 25-Hydroxy', desc: 'Vitamin D levels', price: '$55' }
+            ],
+            genetic: [
+                { id: 'apoe', name: 'APOE Genotyping', desc: 'Alzheimer\'s risk factor', price: '$150' },
+                { id: 'mthfr', name: 'MTHFR Variant', desc: 'Folate metabolism', price: '$125' },
+                { id: 'pharmacogenomics', name: 'Pharmacogenomics Panel', desc: 'Drug response genetics', price: '$299' }
+            ]
+        };
+
+        // Mock requests data
+        let labRequests = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDatabase();
+            
+            // Set min date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').min = today;
+            
+            // Load existing requests
+            loadRequests();
+            
+            // Load mock results
+            loadResults();
+        });
+
+        // Tab switching
+        function showTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+            
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Category selection
+        function selectCategory(element) {
+            const category = element.dataset.category;
+            const isSelected = element.classList.toggle('selected');
+            
+            const testItemsContainer = document.getElementById('testItems');
+            
+            if (isSelected) {
+                // Show test items for this category
+                const tests = TEST_DATABASE[category] || [];
+                const categoryTests = document.createElement('div');
+                categoryTests.id = `category-${category}`;
+                categoryTests.innerHTML = `
+                    <h4 style="font-size: 14px; margin: 16px 0 8px; color: var(--accent);">
+                        ${element.querySelector('.test-category-name').textContent}
+                    </h4>
+                    ${tests.map(test => `
+                        <div class="test-item" data-test-id="${test.id}" onclick="toggleTest(this)">
+                            <input type="checkbox" onchange="event.stopPropagation()">
+                            <div class="test-item-info">
+                                <div class="test-item-name">${test.name}</div>
+                                <div class="test-item-desc">${test.desc}</div>
+                            </div>
+                            <div class="test-item-price">${test.price}</div>
+                        </div>
+                    `).join('')}
+                `;
+                testItemsContainer.appendChild(categoryTests);
+                testItemsContainer.style.display = 'flex';
+            } else {
+                // Remove test items for this category
+                const categoryTests = document.getElementById(`category-${category}`);
+                if (categoryTests) categoryTests.remove();
+                
+                if (testItemsContainer.children.length === 0) {
+                    testItemsContainer.style.display = 'none';
+                }
+            }
+        }
+
+        // Test selection
+        function toggleTest(element) {
+            element.classList.toggle('selected');
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            checkbox.checked = element.classList.contains('selected');
+        }
+
+        // Provider selection
+        function selectProvider(element) {
+            document.querySelectorAll('.provider-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+
+        // Form submission
+        document.getElementById('labRequestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Get selected tests
+            const selectedTests = [];
+            document.querySelectorAll('.test-item.selected').forEach(item => {
+                const testId = item.dataset.testId;
+                const testName = item.querySelector('.test-item-name').textContent;
+                const testPrice = item.querySelector('.test-item-price').textContent;
+                selectedTests.push({ id: testId, name: testName, price: testPrice });
+            });
+            
+            if (selectedTests.length === 0) {
+                toast.error('Please select at least one test');
+                return;
+            }
+            
+            // Get selected provider
+            const selectedProvider = document.querySelector('.provider-card.selected');
+            if (!selectedProvider) {
+                toast.error('Please select a provider');
+                return;
+            }
+            
+            // Show loading
+            spinner.show('Submitting your request...');
+            
+            try {
+                // Create request object
+                const request = {
+                    id: 'REQ-' + Date.now(),
+                    user_id: CURRENT_USER_ID,
+                    tests: selectedTests,
+                    provider: selectedProvider.dataset.provider,
+                    provider_name: selectedProvider.querySelector('h4').textContent,
+                    appointment_date: document.getElementById('appointmentDate').value,
+                    appointment_time: document.getElementById('appointmentTime').value,
+                    fasting_required: document.getElementById('fastingRequired').value,
+                    insurance_provider: document.getElementById('insuranceProvider').value,
+                    policy_number: document.getElementById('policyNumber').value,
+                    special_notes: document.getElementById('specialNotes').value,
+                    status: 'pending',
+                    created_at: new Date().toISOString(),
+                    total_price: selectedTests.reduce((sum, t) => sum + parseInt(t.price.replace('$', '')), 0)
+                };
+                
+                // Save to localStorage (in production, save to Supabase)
+                labRequests.unshift(request);
+                localStorage.setItem(`lab_requests_${CURRENT_USER_ID}`, JSON.stringify(labRequests));
+                
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                spinner.hide();
+                toast.success('Lab request submitted successfully!');
+                
+                // Reset form and switch to tracking
+                e.target.reset();
+                document.querySelectorAll('.test-category.selected').forEach(el => selectCategory(el));
+                document.querySelectorAll('.provider-card.selected').forEach(el => el.classList.remove('selected'));
+                
+                loadRequests();
+                showTab('tracking');
+                
+            } catch (error) {
+                spinner.hide();
+                toast.error('Failed to submit request. Please try again.');
+                console.error('Submit error:', error);
+            }
+        });
+
+        // Load requests
+        function loadRequests() {
+            const saved = localStorage.getItem(`lab_requests_${CURRENT_USER_ID}`);
+            if (saved) {
+                labRequests = JSON.parse(saved);
+            }
+            
+            const container = document.getElementById('trackingList');
+            
+            if (labRequests.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                        <i class="fas fa-clipboard-list" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                        <p>No lab requests yet</p>
+                        <button class="btn btn-primary" onclick="showTab('request')" style="margin-top: 16px;">
+                            Request Your First Test
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = labRequests.map(req => `
+                <div class="tracking-card">
+                    <div class="tracking-header">
+                        <div>
+                            <div class="tracking-id">${req.id}</div>
+                            <h3 style="font-size: 16px; margin-top: 4px;">${req.provider_name}</h3>
+                        </div>
+                        <span class="tracking-status ${req.status}">${req.status}</span>
+                    </div>
+                    
+                    <div class="tracking-tests">
+                        <h4>Requested Tests (${req.tests.length})</h4>
+                        <ul>
+                            ${req.tests.map(t => `<li>${t.name}</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div class="tracking-footer">
+                        <div>
+                            <div class="tracking-provider">
+                                <i class="fas fa-calendar"></i> ${formatDate(req.appointment_date)} • ${formatTime(req.appointment_time)}
+                            </div>
+                        </div>
+                        <div class="tracking-actions">
+                            <span style="color: var(--accent); font-weight: 600;">$${req.total_price}</span>
+                            ${req.status === 'completed' ? `
+                                <button class="btn btn-success btn-small" onclick="viewResults('${req.id}')">
+                                    <i class="fas fa-eye"></i> View Results
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load mock results
+        function loadResults() {
+            const results = [
+                { name: 'Total Cholesterol', value: '185', unit: 'mg/dL', range: '125-200', status: 'normal' },
+                { name: 'HDL Cholesterol', value: '55', unit: 'mg/dL', range: '40-60', status: 'normal' },
+                { name: 'LDL Cholesterol', value: '110', unit: 'mg/dL', range: '0-130', status: 'normal' },
+                { name: 'Triglycerides', value: '145', unit: 'mg/dL', range: '0-150', status: 'normal' },
+                { name: 'Fasting Glucose', value: '95', unit: 'mg/dL', range: '70-100', status: 'normal' },
+                { name: 'HbA1c', value: '5.4', unit: '%', range: '4.0-5.7', status: 'normal' },
+                { name: 'Vitamin D', value: '28', unit: 'ng/mL', range: '30-100', status: 'warning' },
+                { name: 'C-Reactive Protein', value: '2.1', unit: 'mg/L', range: '0-3.0', status: 'normal' },
+                { name: 'TSH', value: '2.5', unit: 'mIU/L', range: '0.4-4.0', status: 'normal' }
+            ];
+            
+            const container = document.getElementById('resultsGrid');
+            container.innerHTML = results.map(r => `
+                <div class="result-card">
+                    <div class="result-label">${r.name}</div>
+                    <div class="result-value ${r.status}">${r.value}</div>
+                    <div class="result-label">${r.unit}</div>
+                    <div class="result-range">Ref: ${r.range}</div>
+                </div>
+            `).join('');
+        }
+
+        // View results
+        function viewResults(requestId) {
+            showTab('results');
+            toast.info('Showing results for request ' + requestId);
+        }
+
+        // Format date
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Not scheduled';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // Format time
+        function formatTime(timeStr) {
+            const times = {
+                morning: '8AM - 12PM',
+                afternoon: '12PM - 5PM',
+                evening: '5PM - 8PM'
+            };
+            return times[timeStr] || timeStr;
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('longevity_user_id');
+            localStorage.removeItem('longevity_user_email');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

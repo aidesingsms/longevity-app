@@ -1,9 +1,11 @@
 // Supabase Configuration for AIDESING Longevity App
 // Active connection to live database
+// Timezone: America/New_York (Tampa, Florida)
 
 const SUPABASE_CONFIG = {
     url: 'https://lbqaeoqzflldiwtxlecd.supabase.co',
-    anonKey: 'sb_publishable_HfK2VZMmAglXlZm9dCKz_g_nOwI3RSH'
+    anonKey: 'sb_publishable_HfK2VZMmAglXlZm9dCKz_g_nOwI3RSH',
+    timezone: 'America/New_York' // Tampa, Florida timezone
 };
 
 // Initialize database connection
