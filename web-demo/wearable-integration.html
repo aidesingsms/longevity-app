@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIDESING Longevity Pro - Wearable Integration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --accent: #00d4ff;
+            --accent-glow: rgba(0, 212, 255, 0.3);
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --bg-dark: #0a0e1a;
+            --bg-card: #111827;
+            --bg-input: #1a202c;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --border: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .logo-main {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            color: var(--bg-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Wearable Connection Cards */
+        .wearable-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .wearable-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .wearable-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .wearable-card.connected {
+            border-color: var(--success);
+            background: rgba(72, 187, 120, 0.1);
+        }
+
+        .wearable-card.connecting {
+            border-color: var(--warning);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .wearable-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .wearable-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .wearable-status {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .wearable-card.connected .wearable-status {
+            color: var(--success);
+        }
+
+        .connection-dot {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .wearable-card.connected .connection-dot {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        /* Health Dashboard */
+        .dashboard {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .last-sync {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Health Rings */
+        .rings-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 24px;
+        }
+
+        .ring-item {
+            text-align: center;
+        }
+
+        .ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(var(--ring-color) var(--ring-progress), var(--bg-input) var(--ring-progress));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .ring-inner {
+            width: 65px;
+            height: 65px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ring-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .ring-label {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .ring-name {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Health Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .metric-card {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 16px;
+            position: relative;
+        }
+
+        .metric-icon {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 20px;
+            opacity: 0.5;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .metric-value.good { color: var(--success); }
+        .metric-value.warning { color: var(--warning); }
+        .metric-value.danger { color: var(--danger); }
+
+        .metric-trend {
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
+
+        /* AI Insights */
+        .insights-section {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(72, 187, 120, 0.1));
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .insights-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .insights-header i {
+            color: var(--accent);
+            font-size: 20px;
+        }
+
+        .insights-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .insight-item:last-child {
+            border-bottom: none;
+        }
+
+        .insight-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-input);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .insight-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Sync Button */
+        .sync-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .sync-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+
+        .sync-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .sync-btn.syncing i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Setup Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 26, 0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header i {
+            font-size: 48px;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .modal-header p {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .permission-list {
+            margin: 24px 0;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .permission-item i {
+            color: var(--accent);
+        }
+
+        .permission-item span {
+            font-size: 14px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: var(--bg-input);
+            color: var(--text-gray);
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">⌚</div>
+                <div>
+                    <div class="logo-main">AIDESING</div>
+                    <div class="logo-sub">LONGEVITY PRO</div>
+                </div>
+            </div>
+            <div class="badge">Wearable Connected</div>
+        </header>
+
+        <!-- Wearable Connections -->
+        <section class="wearable-section">
+            <h2 style="font-size: 16px; margin-bottom: 16px; color: var(--text-secondary);">Connect Your Devices</h2>
+            
+            <div class="wearable-grid">
+                <div class="wearable-card" id="appleHealth" onclick="connectWearable('apple')">
+                    <div class="connection-dot"></div>
+                    <div class="wearable-icon">🍎</div>
+                    <div class="wearable-name">Apple Health</div>
+                    <div class="wearable-status">Tap to connect</div>
+                </div>
+
+                <div class="wearable-card" id="googleFit" onclick="connectWearable('google')">
+                    <div class="connection-dot"></div>
+                    <div class="wearable-icon">🤖</div>
+                    <div class="wearable-name">Google Fit</div>
+                    <div class="wearable-status">Tap to connect</div>
+                </div>
+
+                <div class="wearable-card" id="oura" onclick="connectWearable('oura')">
+                    <div class="connection-dot"></div>
+                    <div class="wearable-icon">💍</div>
+                    <div class="wearable-name">Oura Ring</div>
+                    <div class="wearable-status">Tap to connect</div>
+                </div>
+
+                <div class="wearable-card" id="whoop" onclick="connectWearable('whoop')">
+                    <div class="connection-dot"></div>
+                    <div class="wearable-icon">📿</div>
+                    <div class="wearable-name">Whoop</div>
+                    <div class="wearable-status">Tap to connect</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Health Dashboard -->
+        <section class="dashboard" id="dashboard" style="display: none;">
+            <div class="dashboard-header">
+                <span class="dashboard-title">Today's Health</span>
+                <span class="last-sync">Last sync: Just now</span>
+            </div>
+
+            <!-- Activity Rings -->
+            <div class="rings-container">
+                <div class="ring-item">
+                    <div class="ring" style="--ring-color: #ff3366; --ring-progress: 75%;">
+                        <div class="ring-inner">
+                            <span class="ring-value">450</span>
+                            <span class="ring-label">kcal</span>
+                        </div>
+                    </div>
+                    <span class="ring-name">Move</span>
+                </div>
+
+                <div class="ring-item">
+                    <div class="ring" style="--ring-color: #00d4ff; --ring-progress: 60%;">
+                        <div class="ring-inner">
+                            <span class="ring-value">45</span>
+                            <span class="ring-label">min</span>
+                        </div>
+                    </div>
+                    <span class="ring-name">Exercise</span>
+                </div>
+
+                <div class="ring-item">
+                    <div class="ring" style="--ring-color: #48bb78; --ring-progress: 85%;">
+                        <div class="ring-inner">
+                            <span class="ring-value">8</span>
+                            <span class="ring-label">hrs</span>
+                        </div>
+                    </div>
+                    <span class="ring-name">Stand</span>
+                </div>
+            </div>
+
+            <!-- Health Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <i class="fas fa-heart metric-icon"></i>
+                    <div class="metric-label">Heart Rate</div>
+                    <div class="metric-value good">72</div>
+                    <div class="metric-trend trend-down">
+                        <i class="fas fa-arrow-down"></i> 3 bpm vs avg
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <i class="fas fa-lungs metric-icon"></i>
+                    <div class="metric-label">HRV</div>
+                    <div class="metric-value good">65ms</div>
+                    <div class="metric-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> +5ms vs yesterday
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <i class="fas fa-moon metric-icon"></i>
+                    <div class="metric-label">Sleep Score</div>
+                    <div class="metric-value warning">78</div>
+                    <div class="metric-trend trend-down">
+                        <i class="fas fa-arrow-down"></i> -4 pts
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <i class="fas fa-walking metric-icon"></i>
+                    <div class="metric-label">Steps</div>
+                    <div class="metric-value good">8,432</div>
+                    <div class="metric-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> +12% vs goal
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <i class="fas fa-tint metric-icon"></i>
+                    <div class="metric-label">SpO2</div>
+                    <div class="metric-value good">98%</div>
+                    <div class="metric-trend">Normal range</div>
+                </div>
+
+                <div class="metric-card">
+                    <i class="fas fa-thermometer-half metric-icon"></i>
+                    <div class="metric-label">Temp</div>
+                    <div class="metric-value good">98.4°F</div>
+                    <div class="metric-trend">Baseline</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Insights -->
+        <section class="insights-section" id="insights" style="display: none;">
+            <div class="insights-header">
+                <i class="fas fa-robot"></i>
+                <h3>AI Health Insights</h3>
+            </div>
+
+            <div class="insight-item">
+                <div class="insight-icon">💤</div>
+                <div class="insight-text">
+                    Your deep sleep was 15% lower than optimal. Consider magnesium supplement 1 hour before bed.
+                </div>
+            </div>
+
+            <div class="insight-item">
+                <div class="insight-icon">❤️</div>
+                <div class="insight-text">
+                    HRV trending upward - your recovery is improving. Keep current exercise routine.
+                </div>
+            </div>
+
+            <div class="insight-item">
+                <div class="insight-icon">🏃</div>
+                <div class="insight-text">
+                    You've hit your move goal 5 days in a row! Consider increasing goal by 10%.
+                </div>
+            </div>
+        </section>
+
+        <!-- Sync Button -->
+        <button class="sync-btn" id="syncBtn" onclick="syncData()">
+            <i class="fas fa-sync"></i>
+            <span>Sync with Wearables</span>
+        </button>
+    </div>
+
+    <!-- Setup Modal -->
+    <div class="modal" id="setupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-mobile-alt"></i>
+                <h2>Connect Apple Health</h2>
+                <p>Allow AIDESING Longevity to access your health data for personalized insights.</p>
+            </div>
+
+            <div class="permission-list">
+                <div class="permission-item">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Heart Rate & HRV</span>
+                </div>
+                <div class="permission-item">
+                    <i class="fas fa-moon"></i>
+                    <span>Sleep Analysis</span>
+                </div>
+                <div class="permission-item">
+                    <i class="fas fa-walking"></i>
+                    <span>Activity & Steps</span>
+                </div>
+                <div class="permission-item">
+                    <i class="fas fa-lungs"></i>
+                    <span>Blood Oxygen</span>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="confirmConnection()">Connect</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentWearable = null;
+        let isConnected = false;
+
+        // Connect wearable device
+        function connectWearable(type) {
+            currentWearable = type;
+            const card = document.getElementById(type === 'apple' ? 'appleHealth' : 
+                                                  type === 'google' ? 'googleFit' : 
+                                                  type === 'oura' ? 'oura' : 'whoop');
+            
+            // Show connecting state
+            card.classList.add('connecting');
+            card.querySelector('.wearable-status').textContent = 'Connecting...';
+
+            // Simulate connection process
+            setTimeout(() => {
+                card.classList.remove('connecting');
+                card.classList.add('connected');
+                card.querySelector('.wearable-status').textContent = 'Connected';
+                
+                // Show setup modal for Apple/Google
+                if (type === 'apple' || type === 'google') {
+                    document.getElementById('setupModal').classList.add('active');
+                } else {
+                    // For Oura/Whoop, show dashboard directly
+                    showDashboard();
+                }
+            }, 1500);
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('setupModal').classList.remove('active');
+        }
+
+        // Confirm connection
+        function confirmConnection() {
+            closeModal();
+            showDashboard();
+        }
+
+        // Show health dashboard
+        function showDashboard() {
+            isConnected = true;
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('insights').style.display = 'block';
+            document.getElementById('syncBtn').innerHTML = '<i class="fas fa-sync"></i><span>Sync Now</span>';
+            
+            // Scroll to dashboard
+            document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Sync data
+        function syncData() {
+            const btn = document.getElementById('syncBtn');
+            btn.classList.add('syncing');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-sync"></i><span>Syncing...</span>';
+
+            // Simulate sync
+            setTimeout(() => {
+                btn.classList.remove('syncing');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i><span>Synced! Updated just now</span>';
+                
+                // Update last sync time
+                document.querySelector('.last-sync').textContent = 'Last sync: Just now';
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-sync"></i><span>Sync Now</span>';
+                }, 3000);
+            }, 2000);
+        }
+
+        // Close modal on outside click
+        document.getElementById('setupModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('setupModal')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
