@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIDESING - Project Gallery | 24+ Real Projects</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --accent: #00d4ff;
+            --accent-glow: rgba(0, 212, 255, 0.3);
+            --bg-dark: #0a0e1a;
+            --bg-card: #111827;
+            --border: #2d3748;
+            --text-light: #ffffff;
+            --text-gray: #a0aec0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-gray);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 60px 24px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-dark) 100%);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, white, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 32px;
+        }
+
+        .stat h3 {
+            font-size: 32px;
+            color: var(--accent);
+        }
+
+        .stat p {
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* Filter Buttons */
+        .filters {
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-gray);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-dark);
+        }
+
+        /* Gallery Grid */
+        .gallery {
+            padding: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+
+        .gallery-item.featured {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10, 14, 26, 0.95) 0%, transparent 60%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-overlay h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .gallery-overlay p {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin: 0;
+        }
+
+        .gallery-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--accent);
+            color: var(--bg-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 26, 0.98);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-img {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 12px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-nav:hover {
+            background: var(--accent);
+        }
+
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .gallery-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .gallery-item.featured {
+                grid-column: span 2;
+                grid-row: span 1;
+            }
+            
+            .hero h1 {
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-item.featured {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="aidesing-website.html" class="logo">
+                <div class="logo-icon">⚡</div>
+                <div class="logo-text">AIDESING</div>
+            </a>
+            <a href="aidesing-website.html" class="back-btn">← Back to Website</a>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>Our Work Speaks</h1>
+        <p>24+ real projects completed across Tampa Bay. From residential remodels to commercial installations, see the quality that sets us apart.</p>
+        
+        <div class="stats">
+            <div class="stat">
+                <h3>24+</h3>
+                <p>Projects</p>
+            </div>
+            <div class="stat">
+                <h3>500+</h3>
+                <p>Happy Clients</p>
+            </div>
+            <div class="stat">
+                <h3>15+</h3>
+                <p>Years Experience</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <div class="filters">
+        <button class="filter-btn active" onclick="filterGallery('all')">All Projects</button>
+        <button class="filter-btn" onclick="filterGallery('residential')">Residential</button>
+        <button class="filter-btn" onclick="filterGallery('commercial')">Commercial</button>
+        <button class="filter-btn" onclick="filterGallery('panels')">Panels</button>
+        <button class="filter-btn" onclick="filterGallery('smart')">Smart Home</button>
+    </div>
+
+    <!-- Gallery -->
+    <section class="gallery">
+        <div class="gallery-grid" id="galleryGrid">
+            <!-- Gallery items will be generated by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">×</button>
+        <button class="lightbox-nav lightbox-prev" onclick="prevImage()">‹</button>
+        <img class="lightbox-img" id="lightboxImg" src="" alt="">
+        <button class="lightbox-nav lightbox-next" onclick="nextImage()">›</button>
+    </div>
+
+    <script>
+        // Photo data - all 24 photos
+        const photos = [
+            { id: 1, file: 'file_8---0062cf34-3adb-4569-a8ae-95a975e33980.jpg', title: 'Commercial Panel Installation', location: 'Tampa, FL', category: 'commercial', featured: true },
+            { id: 2, file: 'file_9---b4556c37-dd54-4d1f-ba4f-0f30a0c842af.jpg', title: 'Residential Service Upgrade', location: 'St. Petersburg, FL', category: 'residential', featured: true },
+            { id: 3, file: 'file_10---981e7c0d-6a82-4731-a2a3-beb3936bb8f0.jpg', title: 'Smart Home Integration', location: 'Clearwater, FL', category: 'smart' },
+            { id: 4, file: 'file_11---c391af1b-4469-4fe7-971d-7d9689e8873b.jpg', title: 'New Construction Wiring', location: 'Apollo Beach, FL', category: 'residential' },
+            { id: 5, file: 'file_12---193984ed-2eec-40be-9aa7-ae854588564b.jpg', title: 'Electrical Remodel', location: 'Riverview, FL', category: 'residential' },
+            { id: 6, file: 'file_13---ae3b7977-3ae3-4478-816b-cdeec2162b92.jpg', title: 'Commercial Build-Out', location: 'Brandon, FL', category: 'commercial', featured: true },
+            { id: 7, file: 'file_14---6f04db6d-dad9-4f6d-8671-c550e8faa219.jpg', title: 'Panel Replacement', location: 'Tampa, FL', category: 'panels' },
+            { id: 8, file: 'file_15---bcd554d8-dc7e-49a6-8a33-323f15343c9c.jpg', title: 'Underground Electrical', location: 'Wesley Chapel, FL', category: 'commercial' },
+            { id: 9, file: 'file_16---96524aa5-a142-4003-a7a2-29da2d99d394.jpg', title: 'Home Automation Setup', location: 'Lutz, FL', category: 'smart' },
+            { id: 10, file: 'file_17---306109f5-54f9-4ef9-9167-2dfcb65364b2.jpg', title: 'Lighting Installation', location: 'Odessa, FL', category: 'residential' },
+            { id: 11, file: 'file_18---08aafd9f-eb2d-4b09-87ce-a56b8042c7da.jpg', title: 'Generator Installation', location: 'Plant City, FL', category: 'panels' },
+            { id: 12, file: 'file_19---28becd20-dfab-47b5-ba85-802ace470c69.jpg', title: 'EV Charger Setup', location: 'Sun City Center, FL', category: 'smart' },
+            { id: 13, file: 'file_20---329f407a-2b28-4cfb-8359-c95a2258e8e1.jpg', title: 'Commercial Lighting', location: 'Downtown Tampa, FL', category: 'commercial' },
+            { id: 14, file: 'file_21---f4585a9a-9743-4ce7-a9bf-a5d74d961cab.jpg', title: 'Pool Electrical', location: 'Lithia, FL', category: 'residential' },
+            { id: 15, file: 'file_22---f7dc1858-183b-417a-8073-10af6a3e6d8a.jpg', title: 'Security System Wiring', location: 'Valrico, FL', category: 'smart' },
+            { id: 16, file: 'file_23---814034f1-86b8-4893-ad9b-8d8a9edd1795.jpg', title: 'Service Panel Upgrade', location: 'Seffner, FL', category: 'panels' },
+            { id: 17, file: 'file_24---20b8f4b0-1de1-48d3-9362-e1838f2dee5b.jpg', title: 'Outdoor Lighting', location: 'Mango, FL', category: 'residential' },
+            { id: 18, file: 'file_25---0f551f13-7418-45eb-883e-1bedcbf8295b.jpg', title: 'Industrial Installation', location: 'East Tampa, FL', category: 'commercial' },
+            { id: 19, file: 'file_26---e38a96e1-2641-4364-ae0a-b01be48c03b3.jpg', title: 'Smart Thermostat Install', location: 'Carrollwood, FL', category: 'smart' },
+            { id: 20, file: 'file_0---0a309b7b-8569-41b6-9797-03640f7c7f40.jpg', title: 'Kitchen Remodel Electric', location: 'Westshore, FL', category: 'residential' },
+            { id: 21, file: 'file_3---427baf69-4e28-4011-9e7c-5430cf95ada3.jpg', title: 'Logo', location: 'AIDESING', category: 'other' },
+            { id: 22, file: 'file_4---e155862b-8122-4a29-af47-dc664a2c4269.jpg', title: 'Panel Inspection', location: 'Tampa, FL', category: 'panels' },
+            { id: 23, file: 'file_5---e6d654ea-144c-4ff6-b04e-135b57e3af45.jpg', title: 'Electrical Inspection', location: 'Tampa, FL', category: 'panels' },
+            { id: 24, file: 'file_6---bdf41637-c874-4775-9db3-bed80ad6ca71.jpg', title: 'Code Compliance Check', location: 'Tampa, FL', category: 'panels' }
+        ];
+
+        let currentFilter = 'all';
+        let currentImageIndex = 0;
+        let filteredPhotos = [...photos];
+
+        // Generate gallery
+        function generateGallery() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = filteredPhotos.map((photo, index) => `
+                <div class="gallery-item ${photo.featured ? 'featured' : ''}" 
+                     onclick="openLightbox(${index})"
+                     data-category="${photo.category}">
+                    <img src="images/${photo.file}" alt="${photo.title}" loading="lazy">
+                    ${photo.featured ? '<span class="gallery-tag">Featured</span>' : ''}
+                    <div class="gallery-overlay">
+                        <h4>${photo.title}</h4>
+                        <p>📍 ${photo.location}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter gallery
+        function filterGallery(category) {
+            currentFilter = category;
+            
+            // Update buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter photos
+            if (category === 'all') {
+                filteredPhotos = [...photos];
+            } else {
+                filteredPhotos = photos.filter(p => p.category === category);
+            }
+            
+            generateGallery();
+        }
+
+        // Lightbox functions
+        function openLightbox(index) {
+            currentImageIndex = index;
+            const photo = filteredPhotos[index];
+            document.getElementById('lightboxImg').src = `images/${photo.file}`;
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % filteredPhotos.length;
+            const photo = filteredPhotos[currentImageIndex];
+            document.getElementById('lightboxImg').src = `images/${photo.file}`;
+        }
+
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
+            const photo = filteredPhotos[currentImageIndex];
+            document.getElementById('lightboxImg').src = `images/${photo.file}`;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('lightbox').classList.contains('active')) return;
+            
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') nextImage();
+            if (e.key === 'ArrowLeft') prevImage();
+        });
+
+        // Initialize
+        generateGallery();
+    </script>
+</body>
+</html>
