@@ -398,25 +398,26 @@
                 const password = document.getElementById('password').value;
                 const remember = document.getElementById('remember').checked;
                 
+                // Use localStorage directly
+                const localDB = new LocalStorageDB();
+                
                 // Hash password
                 const passwordHash = await hashPassword(password);
                 
                 // Find user by email
-                const users = await longevityDB.request(`/users?email=eq.${encodeURIComponent(email)}`);
+                const user = await localDB.findUserByEmail(email);
                 
-                if (users.length === 0) {
+                if (!user) {
                     throw new Error('Invalid email or password');
                 }
                 
-                const user = users[0];
-                
-                // Verify password (simple comparison for demo)
+                // Verify password
                 if (user.password_hash !== passwordHash) {
                     throw new Error('Invalid email or password');
                 }
                 
                 // Update last login
-                await longevityDB.updateUser(user.id, {
+                await localDB.updateUser(user.id, {
                     last_login: new Date().toISOString()
                 });
                 

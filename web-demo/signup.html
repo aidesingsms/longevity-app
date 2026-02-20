@@ -510,6 +510,9 @@
             alertBox.style.display = 'none';
             
             try {
+                // Use localStorage directly for demo
+                const localDB = new LocalStorageDB();
+                
                 // Collect form data
                 const formData = {
                     email: document.getElementById('email').value,
@@ -524,29 +527,8 @@
                     created_at: new Date().toISOString()
                 };
                 
-                // Create user in Supabase
-                const user = await longevityDB.createUser(formData);
-                
-                // Create initial digital twin
-                await longevityDB.updateDigitalTwin(user[0].id, {
-                    user_id: user[0].id,
-                    heart_health: 95,
-                    lung_health: 90,
-                    liver_health: 85,
-                    kidney_health: 88,
-                    brain_health: 92,
-                    gut_health: 80
-                });
-                
-                // Create sample AI insights
-                await longevityDB.createInsight({
-                    user_id: user[0].id,
-                    insight_type: 'general',
-                    title: 'Welcome to AIDESING Longevity!',
-                    description: 'Your account has been created successfully. Start by connecting your wearables and uploading your first biomarker photos.',
-                    severity: 'positive',
-                    generated_at: new Date().toISOString()
-                });
+                // Create user
+                const user = await localDB.createUser(formData);
                 
                 // Show success
                 alertBox.className = 'alert success';
