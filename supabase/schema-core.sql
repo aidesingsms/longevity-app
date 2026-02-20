@@ -1,5 +1,5 @@
 -- AIDESING Longevity - Core Tables Only
--- Execute each section separately if needed
+-- Compatible with older PostgreSQL versions
 
 -- 1. USERS
 CREATE TABLE IF NOT EXISTS users (
@@ -87,20 +87,12 @@ CREATE TABLE IF NOT EXISTS digital_twins (
 );
 
 -- Enable RLS
-ALTER TABLE IF EXISTS users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS biomarker_analyses ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS wearable_connections ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS daily_health_metrics ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS ai_insights ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS digital_twins ENABLE ROW LEVEL SECURITY;
-
--- Create policies (ignore errors if they exist)
-CREATE POLICY IF NOT EXISTS user_isolation ON users FOR ALL USING (auth.uid() = id);
-CREATE POLICY IF NOT EXISTS biomarker_isolation ON biomarker_analyses FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY IF NOT EXISTS wearable_isolation ON wearable_connections FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY IF NOT EXISTS metrics_isolation ON daily_health_metrics FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY IF NOT EXISTS insights_isolation ON ai_insights FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY IF NOT EXISTS twin_isolation ON digital_twins FOR ALL USING (auth.uid() = user_id);
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE biomarker_analyses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wearable_connections ENABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_health_metrics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_insights ENABLE ROW LEVEL SECURITY;
+ALTER TABLE digital_twins ENABLE ROW LEVEL SECURITY;
 
 -- Views
 CREATE OR REPLACE VIEW weekly_summary AS
