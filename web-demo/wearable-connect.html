@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIDESING Longevity - Connect Wearable Device</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="supabase-config.js"></script>
+    <script src="ui-components.js"></script>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --accent: #00d4ff;
+            --accent-glow: rgba(0, 212, 255, 0.3);
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --apple: #555555;
+            --samsung: #1428a0;
+            --fitbit: #00b0b9;
+            --garmin: #007cc3;
+            --oura: #000000;
+            --whoop: #1a1a1a;
+            --bg-dark: #0a0e1a;
+            --bg-card: #111827;
+            --bg-input: #1a202c;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --border: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar-logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .sidebar-logo-text {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .sidebar-logo-sub {
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .nav-section {
+            margin-bottom: 32px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding-left: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+            text-decoration: none;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 212, 255, 0.05));
+            border: 1px solid var(--accent);
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-item span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 32px;
+            max-width: 1400px;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .header-title h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Wizard Steps */
+        .wizard-steps {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+
+        .step {
+            flex: 1;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+            opacity: 0.5;
+            transition: all 0.3s;
+        }
+
+        .step.active {
+            opacity: 1;
+            border-color: var(--accent);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .step.completed {
+            opacity: 1;
+            border-color: var(--success);
+            background: rgba(72, 187, 120, 0.05);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-input);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto 8px;
+        }
+
+        .step.active .step-number {
+            background: var(--accent);
+            color: var(--bg-dark);
+        }
+
+        .step.completed .step-number {
+            background: var(--success);
+            color: white;
+        }
+
+        .step-title {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Device Grid */
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .device-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .device-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .device-card.selected {
+            border-color: var(--accent);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .device-card.connected {
+            border-color: var(--success);
+            background: rgba(72, 187, 120, 0.05);
+        }
+
+        .device-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .device-card[data-device="apple"] .device-icon { background: linear-gradient(135deg, #555, #333); }
+        .device-card[data-device="samsung"] .device-icon { background: linear-gradient(135deg, #1428a0, #0a1a5c); }
+        .device-card[data-device="fitbit"] .device-icon { background: linear-gradient(135deg, #00b0b9, #008a91); }
+        .device-card[data-device="garmin"] .device-icon { background: linear-gradient(135deg, #007cc3, #005a8c); }
+        .device-card[data-device="oura"] .device-icon { background: linear-gradient(135deg, #333, #000); }
+        .device-card[data-device="whoop"] .device-icon { background: linear-gradient(135deg, #333, #1a1a1a); }
+
+        .device-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .device-type {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .device-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .device-status.available {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent);
+        }
+
+        .device-status.connected {
+            background: rgba(72, 187, 120, 0.1);
+            color: var(--success);
+        }
+
+        .connection-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .connection-dot.pulse {
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Connection Panel */
+        .connection-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            display: none;
+        }
+
+        .connection-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .connection-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .connection-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .connection-info h3 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .connection-info p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Permission List */
+        .permission-list {
+            margin: 24px 0;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-input);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .permission-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .permission-details {
+            flex: 1;
+        }
+
+        .permission-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .permission-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .permission-toggle {
+            width: 48px;
+            height: 26px;
+            background: var(--border);
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .permission-toggle.active {
+            background: var(--success);
+        }
+
+        .permission-toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .permission-toggle.active::after {
+            left: 24px;
+        }
+
+        /* Sync Status */
+        .sync-status {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .sync-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .sync-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .sync-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .sync-progress {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .sync-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .sync-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Data Preview */
+        .data-preview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .data-card {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .data-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .data-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            color: white;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Connected Devices List */
+        .connected-devices {
+            margin-top: 32px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .device-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .device-list-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .device-list-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .device-list-info {
+            flex: 1;
+        }
+
+        .device-list-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .device-list-status {
+            font-size: 12px;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .device-list-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-icon.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* API Info Panel */
+        .api-info {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(72, 187, 120, 0.05));
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .api-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .api-info p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .api-info code {
+            background: var(--bg-input);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar { width: 240px; }
+            .main-content { margin-left: 240px; }
+            .device-grid { grid-template-columns: repeat(2, 1fr); }
+            .data-preview { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .device-grid { grid-template-columns: 1fr; }
+            .wizard-steps { flex-direction: column; }
+            .data-preview { grid-template-columns: repeat(2, 1fr); }
+            .action-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">⌚</div>
+                <div>
+                    <div class="sidebar-logo-text">AIDESING</div>
+                    <div class="sidebar-logo-sub">Longevity Pro</div>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Overview</div>
+                
+                <a href="unified-dashboard.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                
+                <a href="multi-biomarker.html" class="nav-item">
+                    <i class="fas fa-microscope"></i>
+                    <span>Biomarkers</span>
+                </a>
+                
+                <a href="wearable-integration.html" class="nav-item">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Wearables</span>
+                </a>
+                
+                <a href="digital-twin.html" class="nav-item">
+                    <i class="fas fa-cube"></i>
+                    <span>Digital Twin</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Health Services</div>
+                
+                <a href="lab-tests.html" class="nav-item">
+                    <i class="fas fa-flask"></i>
+                    <span>Lab Tests</span>
+                </a>
+                
+                <a href="wearable-connect.html" class="nav-item active">
+                    <i class="fas fa-watch"></i>
+                    <span>Connect Device</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                
+                <a href="#" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                
+                <a href="#" class="nav-item" onclick="logout(); return false;" style="color: var(--danger);">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-title">
+                    <h1>Connect Wearable Device</h1>
+                    <p>Link your fitness tracker or smartwatch for real-time health monitoring</p>
+                </div>
+            </header>
+
+            <!-- Wizard Steps -->
+            <div class="wizard-steps">
+                <div class="step active" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Select Device</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Permissions</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Sync Data</div>
+                </div>
+            </div>
+
+            <!-- Device Selection -->
+            <div id="device-selection">
+                <div class="device-grid">
+                    <div class="device-card" data-device="apple" onclick="selectDevice('apple')">
+                        <div class="device-icon">🍎</div>
+                        <div class="device-name">Apple Watch</div>
+                        <div class="device-type">Smartwatch</div>
+                        <div class="device-status available">
+                            <span class="connection-dot pulse"></span>
+                            Available
+                        </div>
+                    </div>
+
+                    <div class="device-card" data-device="samsung" onclick="selectDevice('samsung')">
+                        <div class="device-icon">📱</div>
+                        <div class="device-name">Samsung Galaxy Watch</div>
+                        <div class="device-type">Smartwatch</div>
+                        <div class="device-status available">
+                            <span class="connection-dot pulse"></span>
+                            Available
+                        </div>
+                    </div>
+
+                    <div class="device-card" data-device="fitbit" onclick="selectDevice('fitbit')">
+                        <div class="device-icon">💠</div>
+                        <div class="device-name">Fitbit</div>
+                        <div class="device-type">Fitness Tracker</div>
+                        <div class="device-status available">
+                            <span class="connection-dot pulse"></span>
+                            Available
+                        </div>
+                    </div>
+
+                    <div class="device-card" data-device="garmin" onclick="selectDevice('garmin')">
+                        <div class="device-icon">🧭</div>
+                        <div class="device-name">Garmin</div>
+                        <div class="device-type">Sports Watch</div>
+                        <div class="device-status available">
+                            <span class="connection-dot pulse"></span>
+                            Available
+                        </div>
+                    </div>
+
+                    <div class="device-card" data-device="oura" onclick="selectDevice('oura')">
+                        <div class="device-icon">💍</div>
+                        <div class="device-name">Oura Ring</div>
+                        <div class="device-type">Smart Ring</div>
+                        <div class="device-status available">
+                            <span class="connection-dot pulse"></span>
+                            Available
+                        </div>
+                    </div>
+
+                    <div class="device-card" data-device="whoop" onclick="selectDevice('whoop')">
+                        <div class="device-icon">📿</div>
+                        <div class="device-name">Whoop</div>
+                        <div class="device-type">Fitness Strap</div>
+                        <div class="device-status available">
+                            <span class="connection-dot pulse"></span>
+                            Available
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connection Panel -->
+            <div class="connection-panel" id="connection-panel">
+                <div class="connection-header">
+                    <div class="connection-icon" id="connection-icon">🍎</div>
+                    <div class="connection-info">
+                        <h3 id="connection-device-name">Apple Watch</h3>
+                        <p>Configure data sharing permissions</p>
+                    </div>
+                </div>
+
+                <div class="permission-list">
+                    <div class="permission-item">
+                        <div class="permission-icon">❤️</div>
+                        <div class="permission-details">
+                            <div class="permission-name">Heart Rate & HRV</div>
+                            <div class="permission-desc">Continuous heart rate and variability data</div>
+                        </div>
+                        <div class="permission-toggle active" onclick="togglePermission(this)"></div>
+                    </div>
+
+                    <div class="permission-item">
+                        <div class="permission-icon">😴</div>
+                        <div class="permission-details">
+                            <div class="permission-name">Sleep Analysis</div>
+                            <div class="permission-desc">Sleep stages, duration, and quality metrics</div>
+                        </div>
+                        <div class="permission-toggle active" onclick="togglePermission(this)"></div>
+                    </div>
+
+                    <div class="permission-item">
+                        <div class="permission-icon">🚶</div>
+                        <div class="permission-details">
+                            <div class="permission-name">Activity & Steps</div>
+                            <div class="permission-desc">Steps, distance, calories, workouts</div>
+                        </div>
+                        <div class="permission-toggle active" onclick="togglePermission(this)"></div>
+                    </div>
+
+                    <div class="permission-item">
+                        <div class="permission-icon">🫁</div>
+                        <div class="permission-details">
+                            <div class="permission-name">Blood Oxygen (SpO2)</div>
+                            <div class="permission-desc">Oxygen saturation levels during sleep</div>
+                        </div>
+                        <div class="permission-toggle active" onclick="togglePermission(this)"></div>
+                    </div>
+
+                    <div class="permission-item">
+                        <div class="permission-icon">🌡️</div>
+                        <div class="permission-details">
+                            <div class="permission-name">Body Temperature</div>
+                            <div class="permission-desc">Wrist temperature variations</div>
+                        </div>
+                        <div class="permission-toggle" onclick="togglePermission(this)"></div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="cancelConnection()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button class="btn btn-primary" onclick="connectDevice()">
+                        <i class="fas fa-link"></i> Connect Device
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sync Panel -->
+            <div class="connection-panel" id="sync-panel">
+                <div class="sync-status">
+                    <div class="sync-header">
+                        <span class="sync-title"><i class="fas fa-sync fa-spin"></i> Syncing Data...</span>
+                        <span class="sync-time">Just now</span>
+                    </div>
+                    <div class="sync-progress">
+                        <div class="sync-progress-bar" id="syncProgress" style="width: 0%"></div>
+                    </div>
+                    <div class="sync-stats">
+                        <span id="syncStatusText">Connecting to device...</span>
+                        <span id="syncPercent">0%</span>
+                    </div>
+                </div>
+
+                <div class="data-preview" id="dataPreview" style="display: none;">
+                    <div class="data-card">
+                        <div class="data-value" id="syncHeartRate">--</div>
+                        <div class="data-label">Avg HR (bpm)</div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-value" id="syncHRV">--</div>
+                        <div class="data-label">HRV (ms)</div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-value" id="syncSteps">--</div>
+                        <div class="data-label">Steps Today</div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-value" id="syncSleep">--</div>
+                        <div class="data-label">Sleep (hrs)</div>
+                    </div>
+                </div>
+
+                <div class="action-buttons" id="syncActions" style="display: none;">
+                    <button class="btn btn-secondary" onclick="location.reload()">
+                        <i class="fas fa-plus"></i> Connect Another Device
+                    </button>
+                    <a href="unified-dashboard.html" class="btn btn-primary" style="text-decoration: none;">
+                        <i class="fas fa-chart-line"></i> View Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <!-- Connected Devices -->
+            <div class="connected-devices">
+                <h2 class="section-title">Connected Devices</h2>
+                <div class="device-list" id="connectedDevicesList">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- API Information -->
+            <div class="api-info">
+                <h4><i class="fas fa-info-circle"></i> About Wearable Integration</h4>
+                <p>
+                    This application uses platform-specific APIs to connect with your wearable devices:
+                </p>
+                <p style="margin-top: 12px;">
+                    <strong>Apple HealthKit:</strong> Requires iOS 16+ and HealthKit permissions. Data is synced via <code>HKHealthStore</code> API.
+                </p>
+                <p style="margin-top: 8px;">
+                    <strong>Samsung Health:</strong> Uses Samsung Health SDK for Galaxy Watch and Samsung Health app integration via <code>HealthDataStore</code>.
+                </p>
+                <p style="margin-top: 8px;">
+                    <strong>Other Devices:</strong> Fitbit, Garmin, Oura, and Whoop use their respective REST APIs with OAuth 2.0 authentication.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Current user
+        let CURRENT_USER_ID = localStorage.getItem('longevity_user_id');
+        
+        // Check authentication
+        if (!CURRENT_USER_ID) {
+            window.location.href = 'login.html';
+        }
+
+        // Device configurations
+        const DEVICE_CONFIG = {
+            apple: {
+                name: 'Apple Watch',
+                icon: '🍎',
+                color: '#555',
+                api: 'HealthKit',
+                permissions: ['Heart Rate', 'HRV', 'Sleep', 'Activity', 'SpO2', 'Temperature']
+            },
+            samsung: {
+                name: 'Samsung Galaxy Watch',
+                icon: '📱',
+                color: '#1428a0',
+                api: 'Samsung Health SDK',
+                permissions: ['Heart Rate', 'Sleep', 'Steps', 'Stress', 'SpO2']
+            },
+            fitbit: {
+                name: 'Fitbit',
+                icon: '💠',
+                color: '#00b0b9',
+                api: 'Fitbit Web API',
+                permissions: ['Heart Rate', 'Sleep', 'Steps', 'Active Minutes']
+            },
+            garmin: {
+                name: 'Garmin',
+                icon: '🧭',
+                color: '#007cc3',
+                api: 'Garmin Health API',
+                permissions: ['Heart Rate', 'Sleep', 'Steps', 'Body Battery', 'Stress']
+            },
+            oura: {
+                name: 'Oura Ring',
+                icon: '💍',
+                color: '#000',
+                api: 'Oura Cloud API',
+                permissions: ['Sleep', 'Readiness', 'Activity', 'HRV', 'Temperature']
+            },
+            whoop: {
+                name: 'Whoop',
+                icon: '📿',
+                color: '#1a1a1a',
+                api: 'Whoop API',
+                permissions: ['Strain', 'Recovery', 'Sleep', 'HRV', 'RHR']
+            }
+        };
+
+        let selectedDevice = null;
+        let connectedDevices = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDatabase();
+            loadConnectedDevices();
+        });
+
+        // Select device
+        function selectDevice(deviceId) {
+            selectedDevice = deviceId;
+            const config = DEVICE_CONFIG[deviceId];
+            
+            // Update UI
+            document.querySelectorAll('.device-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-device="${deviceId}"]`).classList.add('selected');
+            
+            // Update connection panel
+            document.getElementById('connection-icon').textContent = config.icon;
+            document.getElementById('connection-device-name').textContent = config.name;
+            
+            // Show connection panel
+            document.getElementById('device-selection').style.display = 'none';
+            document.getElementById('connection-panel').classList.add('active');
+            
+            // Update step
+            updateStep(2);
+        }
+
+        // Toggle permission
+        function togglePermission(element) {
+            element.classList.toggle('active');
+        }
+
+        // Connect device
+        async function connectDevice() {
+            if (!selectedDevice) return;
+            
+            // Hide connection panel, show sync panel
+            document.getElementById('connection-panel').classList.remove('active');
+            document.getElementById('sync-panel').classList.add('active');
+            
+            updateStep(3);
+            
+            // Simulate sync process
+            const steps = [
+                { text: 'Authenticating with device...', progress: 20 },
+                { text: 'Requesting data permissions...', progress: 40 },
+                { text: 'Fetching health metrics...', progress: 60 },
+                { text: 'Processing sleep data...', progress: 80 },
+                { text: 'Sync complete!', progress: 100 }
+            ];
+            
+            for (let i = 0; i < steps.length; i++) {
+                await new Promise(resolve => setTimeout(resolve, 800));
+                document.getElementById('syncProgress').style.width = steps[i].progress + '%';
+                document.getElementById('syncStatusText').textContent = steps[i].text;
+                document.getElementById('syncPercent').textContent = steps[i].progress + '%';
+            }
+            
+            // Generate mock data
+            const mockData = generateMockData(selectedDevice);
+            
+            // Show data preview
+            document.getElementById('dataPreview').style.display = 'grid';
+            document.getElementById('syncHeartRate').textContent = mockData.heartRate;
+            document.getElementById('syncHRV').textContent = mockData.hrv;
+            document.getElementById('syncSteps').textContent = mockData.steps.toLocaleString();
+            document.getElementById('syncSleep').textContent = mockData.sleep;
+            
+            // Save connection
+            const connection = {
+                id: 'DEV-' + Date.now(),
+                device: selectedDevice,
+                name: DEVICE_CONFIG[selectedDevice].name,
+                icon: DEVICE_CONFIG[selectedDevice].icon,
+                connected_at: new Date().toISOString(),
+                last_sync: new Date().toISOString(),
+                data: mockData
+            };
+            
+            connectedDevices.push(connection);
+            localStorage.setItem(`connected_devices_${CURRENT_USER_ID}`, JSON.stringify(connectedDevices));
+            
+            // Show actions
+            document.getElementById('syncActions').style.display = 'flex';
+            
+            // Update connected devices list
+            loadConnectedDevices();
+            
+            toast.success(`${DEVICE_CONFIG[selectedDevice].name} connected successfully!`);
+        }
+
+        // Generate mock data based on device
+        function generateMockData(device) {
+            const baseData = {
+                heartRate: Math.floor(65 + Math.random() * 15),
+                hrv: Math.floor(45 + Math.random() * 30),
+                steps: Math.floor(6000 + Math.random() * 8000),
+                sleep: (6 + Math.random() * 2).toFixed(1)
+            };
+            
+            // Device-specific variations
+            switch(device) {
+                case 'oura':
+                case 'whoop':
+                    baseData.hrv = Math.floor(50 + Math.random() * 40);
+                    break;
+                case 'garmin':
+                    baseData.steps = Math.floor(8000 + Math.random() * 10000);
+                    break;
+            }
+            
+            return baseData;
+        }
+
+        // Cancel connection
+        function cancelConnection() {
+            document.getElementById('connection-panel').classList.remove('active');
+            document.getElementById('device-selection').style.display = 'block';
+            selectedDevice = null;
+            updateStep(1);
+        }
+
+        // Update wizard step
+        function updateStep(step) {
+            document.querySelectorAll('.step').forEach((el, i) => {
+                el.classList.remove('active', 'completed');
+                if (i + 1 < step) el.classList.add('completed');
+                else if (i + 1 === step) el.classList.add('active');
+            });
+        }
+
+        // Load connected devices
+        function loadConnectedDevices() {
+            const saved = localStorage.getItem(`connected_devices_${CURRENT_USER_ID}`);
+            if (saved) {
+                connectedDevices = JSON.parse(saved);
+            }
+            
+            const container = document.getElementById('connectedDevicesList');
+            
+            if (connectedDevices.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-watch" style="font-size: 32px; margin-bottom: 12px; opacity: 0.5;"></i>
+                        <p>No devices connected yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = connectedDevices.map(dev => `
+                <div class="device-list-item">
+                    <div class="device-list-icon" style="background: ${DEVICE_CONFIG[dev.device]?.color || '#333'}20;">
+                        ${dev.icon}
+                    </div>
+                    <div class="device-list-info">
+                        <div class="device-list-name">${dev.name}</div>
+                        <div class="device-list-status">
+                            <span class="connection-dot"></span>
+                            Connected • Last sync: ${formatTime(dev.last_sync)}
+                        </div>
+                    </div>
+                    <div class="device-list-actions">
+                        <button class="btn-icon" onclick="syncDevice('${dev.id}')" title="Sync Now">
+                            <i class="fas fa-sync"></i>
+                        </button>
+                        <button class="btn-icon danger" onclick="disconnectDevice('${dev.id}')" title="Disconnect">
+                            <i class="fas fa-unlink"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Sync device
+        async function syncDevice(deviceId) {
+            spinner.show('Syncing device data...');
+            
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Update last sync time
+            const device = connectedDevices.find(d => d.id === deviceId);
+            if (device) {
+                device.last_sync = new Date().toISOString();
+                device.data = generateMockData(device.device);
+                localStorage.setItem(`connected_devices_${CURRENT_USER_ID}`, JSON.stringify(connectedDevices));
+                loadConnectedDevices();
+            }
+            
+            spinner.hide();
+            toast.success('Device synced successfully!');
+        }
+
+        // Disconnect device
+        function disconnectDevice(deviceId) {
+            if (!confirm('Are you sure you want to disconnect this device?')) return;
+            
+            connectedDevices = connectedDevices.filter(d => d.id !== deviceId);
+            localStorage.setItem(`connected_devices_${CURRENT_USER_ID}`, JSON.stringify(connectedDevices));
+            loadConnectedDevices();
+            
+            toast.success('Device disconnected');
+        }
+
+        // Format time
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            const diff = (now - date) / 1000; // seconds
+            
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            return `${Math.floor(diff / 86400)}d ago`;
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('longevity_user_id');
+            localStorage.removeItem('longevity_user_email');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
