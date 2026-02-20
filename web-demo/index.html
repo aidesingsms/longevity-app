@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIDESING Longevity - Biological Age Calculator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>AIDESING Longevity Pro - Optimize Your Healthspan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #1a365d;
@@ -12,877 +13,243 @@
             --accent: #00d4ff;
             --accent-glow: rgba(0, 212, 255, 0.3);
             --success: #48bb78;
-            --warning: #ed8936;
-            --danger: #f56565;
             --bg-dark: #0a0e1a;
             --bg-card: #111827;
-            --bg-input: #1a202c;
             --text-primary: #ffffff;
             --text-secondary: #a0aec0;
             --text-muted: #718096;
             --border: #2d3748;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-dark);
             color: var(--text-primary);
-            min-height: 100vh;
             line-height: 1.6;
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Header */
-        .header {
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
             text-align: center;
-            padding: 30px 0;
+            background: 
+                radial-gradient(ellipse at top, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(26, 54, 93, 0.4) 0%, transparent 50%);
         }
 
         .logo {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
+            gap: 20px;
+            margin-bottom: 40px;
         }
 
         .logo-icon {
-            width: 50px;
-            height: 50px;
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, var(--primary-light), var(--accent));
-            border-radius: 12px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 0 30px var(--accent-glow);
+            font-size: 40px;
+            box-shadow: 0 0 60px var(--accent-glow);
+            animation: pulse 2s infinite;
         }
 
-        .logo-text {
-            text-align: left;
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 60px var(--accent-glow); }
+            50% { box-shadow: 0 0 80px var(--accent-glow); }
         }
 
-        .logo-main {
-            font-size: 24px;
-            font-weight: 700;
+        .logo-text h1 {
+            font-size: 42px;
+            font-weight: 800;
             background: linear-gradient(135deg, var(--text-primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .logo-sub {
-            font-size: 12px;
+        .logo-text p {
+            font-size: 14px;
             color: var(--accent);
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
         }
 
         .tagline {
+            font-size: 24px;
+            font-weight: 300;
             color: var(--text-secondary);
-            font-size: 14px;
+            max-width: 600px;
+            margin-bottom: 16px;
         }
 
-        /* Form Sections */
-        .form-section {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
+        .description {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin-bottom: 40px;
         }
 
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
+        .cta-buttons {
             display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
             align-items: center;
             gap: 10px;
         }
 
-        .section-title i {
-            color: var(--accent);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 20px var(--accent-glow);
         }
 
-        /* Input Groups */
-        .input-group {
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            max-width: 1000px;
+            margin-top: 60px;
+            padding: 0 20px;
+        }
+
+        .feature {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: left;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
             margin-bottom: 16px;
         }
 
-        .input-group label {
-            display: block;
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-        }
-
-        .input-group input,
-        .input-group select {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-primary);
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-
-        .input-group input:focus,
-        .input-group select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        .input-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        /* Slider */
-        .slider-group {
-            margin-bottom: 20px;
-        }
-
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .slider-label {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .slider-value {
-            font-size: 14px;
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 6px;
-            background: var(--bg-input);
-            border-radius: 3px;
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            background: var(--accent);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 10px var(--accent-glow);
-        }
-
-        /* Calculate Button */
-        .calculate-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--primary-light), var(--accent));
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 15px var(--accent-glow);
-            margin-top: 10px;
-        }
-
-        .calculate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--accent-glow);
-        }
-
-        .calculate-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Results Section */
-        .results-section {
-            display: none;
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 24px;
-            margin-top: 20px;
-            border: 1px solid var(--border);
-            animation: fadeIn 0.5s ease;
-        }
-
-        .results-section.show {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .age-display {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 20px;
-        }
-
-        .age-box {
-            text-align: center;
-        }
-
-        .age-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .age-value {
-            font-size: 36px;
-            font-weight: 700;
-            margin: 5px 0;
-        }
-
-        .age-value.chronological {
-            color: var(--text-secondary);
-        }
-
-        .age-value.biological {
-            background: linear-gradient(135deg, var(--accent), #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .age-diff {
-            font-size: 14px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 500;
-        }
-
-        .age-diff.positive {
-            background: rgba(245, 101, 101, 0.2);
-            color: var(--danger);
-        }
-
-        .age-diff.negative {
-            background: rgba(72, 187, 120, 0.2);
-            color: var(--success);
-        }
-
-        /* Score Circle */
-        .score-container {
-            display: flex;
-            justify-content: center;
-            margin: 24px 0;
-        }
-
-        .score-circle {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: conic-gradient(var(--accent) var(--score-deg), var(--bg-input) var(--score-deg));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .score-inner {
-            width: 120px;
-            height: 120px;
-            background: var(--bg-card);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .score-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .score-label {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        /* Component Scores */
-        .component-scores {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .component-box {
-            background: var(--bg-input);
-            border-radius: 10px;
-            padding: 16px 8px;
-            text-align: center;
-        }
-
-        .component-icon {
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-
-        .component-value {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--accent);
-        }
-
-        .component-name {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* Interpretation */
-        .interpretation {
-            background: var(--bg-input);
-            border-radius: 10px;
-            padding: 16px;
-            margin-top: 20px;
-            border-left: 3px solid var(--accent);
-        }
-
-        .interpretation-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--accent);
-        }
-
-        .interpretation-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        /* BMI Display */
-        .bmi-display {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-input);
-            border-radius: 10px;
-            padding: 12px 16px;
-            margin-top: 16px;
-        }
-
-        .bmi-label {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .bmi-value {
+        .feature h3 {
             font-size: 18px;
             font-weight: 600;
-            color: var(--text-primary);
+            margin-bottom: 8px;
         }
 
-        .bmi-category {
-            font-size: 12px;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: 500;
-        }
-
-        .bmi-category.normal {
-            background: rgba(72, 187, 120, 0.2);
-            color: var(--success);
-        }
-
-        .bmi-category.overweight {
-            background: rgba(237, 137, 54, 0.2);
-            color: var(--warning);
-        }
-
-        .bmi-category.obese {
-            background: rgba(245, 101, 101, 0.2);
-            color: var(--danger);
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 30px 0;
+        .feature p {
+            font-size: 14px;
             color: var(--text-muted);
-            font-size: 12px;
         }
 
-        .footer a {
-            color: var(--accent);
-            text-decoration: none;
+        .footer {
+            margin-top: 60px;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 13px;
         }
 
-        /* Responsive */
-        @media (max-width: 480px) {
-            .container {
-                padding: 15px;
-            }
-
-            .age-display {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .component-scores {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 600px) {
+            .logo-text h1 { font-size: 32px; }
+            .tagline { font-size: 20px; }
+            .features { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <div class="logo-icon">🧬</div>
-                <div class="logo-text">
-                    <div class="logo-main">AIDESING</div>
-                    <div class="logo-sub">LONGEVITY</div>
-                </div>
+    <div class="hero">
+        <div class="logo">
+            <div class="logo-icon">🧬</div>
+            <div class="logo-text">
+                <h1>AIDESING</h1>
+                <p>Longevity Pro</p>
             </div>
-            <p class="tagline">Calculate your biological age</p>
-        </header>
+        </div>
 
-        <!-- Basic Info -->
-        <section class="form-section">
-            <h2 class="section-title">
-                <span>👤</span> Basic Information
-            </h2>
-            
-            <div class="input-row">
-                <div class="input-group">
-                    <label>Age (years)</label>
-                    <input type="number" id="age" min="18" max="100" value="40">
-                </div>
-                <div class="input-group">
-                    <label>Gender</label>
-                    <select id="gender">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
+        <h2 class="tagline">Optimize Your Healthspan with AI-Powered Insights</h2>
+        <p class="description">Track biomarkers, analyze wearable data, and visualize your health with our advanced longevity platform.</p>
+
+        <div class="cta-buttons">
+            <a href="signup.html" class="btn btn-primary">
+                <i class="fas fa-rocket"></i> Get Started
+            </a>
+            <a href="login.html" class="btn btn-secondary">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </a>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🔬</div>
+                <h3>Multi-Biomarker Analysis</h3>
+                <p>Analyze body, face, tongue, and hand photos for comprehensive health insights.</p>
             </div>
-        </section>
-
-        <!-- Body Measurements -->
-        <section class="form-section">
-            <h2 class="section-title">
-                <span>📏</span> Body Measurements
-            </h2>
-            
-            <div class="input-row">
-                <div class="input-group">
-                    <label>Weight (kg)</label>
-                    <input type="number" id="weight" min="30" max="200" value="75" step="0.1">
-                </div>
-                <div class="input-group">
-                    <label>Height (cm)</label>
-                    <input type="number" id="height" min="100" max="250" value="175">
-                </div>
+            <div class="feature">
+                <div class="feature-icon">⌚</div>
+                <h3>Wearable Integration</h3>
+                <p>Connect Apple Health, Google Fit, Oura Ring, and more for real-time monitoring.</p>
             </div>
-
-            <div class="input-row">
-                <div class="input-group">
-                    <label>Waist (cm)</label>
-                    <input type="number" id="waist" min="50" max="150" value="85" step="0.1">
-                </div>
-                <div class="input-group">
-                    <label>Hip (cm)</label>
-                    <input type="number" id="hip" min="50" max="150" value="95" step="0.1">
-                </div>
+            <div class="feature">
+                <div class="feature-icon">🧬</div>
+                <h3>3D Digital Twin</h3>
+                <p>Visualize your health with an interactive 3D avatar and organ health scores.</p>
             </div>
-        </section>
-
-        <!-- Lifestyle -->
-        <section class="form-section">
-            <h2 class="section-title">
-                <span>🌟</span> Lifestyle Factors
-            </h2>
-
-            <div class="slider-group">
-                <div class="slider-header">
-                    <span class="slider-label">Exercise Frequency</span>
-                    <span class="slider-value" id="exerciseFreqValue">3x/week</span>
-                </div>
-                <input type="range" id="exerciseFreq" min="0" max="4" value="3" 
-                       oninput="updateExerciseLabel(this.value)">
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <h3>AI-Powered Insights</h3>
+                <p>Get personalized recommendations based on your unique health data patterns.</p>
             </div>
+        </div>
 
-            <div class="slider-group">
-                <div class="slider-header">
-                    <span class="slider-label">Exercise Intensity</span>
-                    <span class="slider-value" id="exerciseIntValue">Moderate</span>
-                </div>
-                <input type="range" id="exerciseInt" min="0" max="3" value="2"
-                       oninput="updateIntensityLabel(this.value)">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-header">
-                    <span class="slider-label">Sleep Hours</span>
-                    <span class="slider-value" id="sleepValue">7.5h</span>
-                </div>
-                <input type="range" id="sleepHours" min="4" max="12" step="0.5" value="7.5"
-                       oninput="updateSleepLabel(this.value)">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-header">
-                    <span class="slider-label">Sleep Quality</span>
-                    <span class="slider-value" id="sleepQualValue">Good</span>
-                </div>
-                <input type="range" id="sleepQuality" min="1" max="5" value="4"
-                       oninput="updateSleepQualityLabel(this.value)">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-header">
-                    <span class="slider-label">Stress Level</span>
-                    <span class="slider-value" id="stressValue">Low</span>
-                </div>
-                <input type="range" id="stress" min="1" max="5" value="2"
-                       oninput="updateStressLabel(this.value)">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-header">
-                    <span class="slider-label">Diet Quality</span>
-                    <span class="slider-value" id="dietValue">Good</span>
-                </div>
-                <input type="range" id="diet" min="1" max="5" value="4"
-                       oninput="updateDietLabel(this.value)">
-            </div>
-
-            <div class="input-row">
-                <div class="input-group">
-                    <label>Smoking</label>
-                    <select id="smoking">
-                        <option value="0">Never</option>
-                        <option value="1">Former</option>
-                        <option value="2">Light</option>
-                        <option value="3">Heavy</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Alcohol</label>
-                    <select id="alcohol">
-                        <option value="0">None</option>
-                        <option value="1">Rarely</option>
-                        <option value="2">Social</option>
-                        <option value="3">Regular</option>
-                        <option value="4">Heavy</option>
-                    </select>
-                </div>
-            </div>
-        </section>
-
-        <button class="calculate-btn" onclick="calculateBiologicalAge()">
-            Calculate Biological Age
-        </button>
-
-        <!-- Results -->
-        <section class="results-section" id="results">
-            <div class="result-header">
-                <h2>Your Results</h2>
-            </div>
-
-            <div class="age-display">
-                <div class="age-box">
-                    <div class="age-label">Chronological</div>
-                    <div class="age-value chronological" id="resultChrono">40</div>
-                </div>
-                <div style="font-size: 24px; color: var(--text-muted);">→</div>
-                <div class="age-box">
-                    <div class="age-label">Biological</div>
-                    <div class="age-value biological" id="resultBio">38</div>
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-bottom: 20px;">
-                <span class="age-diff" id="ageDiff">-2 years younger</span>
-            </div>
-
-            <div class="score-container">
-                <div class="score-circle" id="scoreCircle">
-                    <div class="score-inner">
-                        <div class="score-value" id="longevityScore">85</div>
-                        <div class="score-label">Longevity Score</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="component-scores">
-                <div class="component-box">
-                    <div class="component-icon">🏃</div>
-                    <div class="component-value" id="lifestyleScore">80</div>
-                    <div class="component-name">Lifestyle</div>
-                </div>
-                <div class="component-box">
-                    <div class="component-icon">⚡</div>
-                    <div class="component-value" id="metabolicScore">85</div>
-                    <div class="component-name">Metabolic</div>
-                </div>
-                <div class="component-box">
-                    <div class="component-icon">❤️</div>
-                    <div class="component-value" id="cardioScore">90</div>
-                    <div class="component-name">Cardio</div>
-                </div>
-            </div>
-
-            <div class="bmi-display">
-                <span class="bmi-label">BMI</span>
-                <div>
-                    <span class="bmi-value" id="bmiValue">24.5</span>
-                    <span class="bmi-category normal" id="bmiCategory">Normal</span>
-                </div>
-            </div>
-
-            <div class="interpretation">
-                <div class="interpretation-title">Analysis</div>
-                <div class="interpretation-text" id="interpretation">
-                    Your biological age is younger than your chronological age. Keep up the good work!
-                </div>
-            </div>
-        </section>
-
-        <footer class="footer">
-            <p>Powered by <a href="#">AIDESING SMART SOLUTIONS</a></p>
-            <p style="margin-top: 5px; opacity: 0.7;">Algorithm v1.0 | For educational purposes</p>
-        </footer>
+        <div class="footer">
+            © 2026 AIDESING SMART SOLUTIONS LLC • Tampa, Florida
+        </div>
     </div>
 
     <script>
-        // Label update functions
-        const exerciseLabels = ['Never', '1x/week', '2x/week', '3x/week', 'Daily'];
-        const intensityLabels = ['None', 'Light', 'Moderate', 'High'];
-        const qualityLabels = ['Very Poor', 'Poor', 'Fair', 'Good', 'Excellent'];
-        const stressLabels = ['Very Low', 'Low', 'Moderate', 'High', 'Very High'];
-
-        function updateExerciseLabel(val) {
-            document.getElementById('exerciseFreqValue').textContent = exerciseLabels[val];
-        }
-
-        function updateIntensityLabel(val) {
-            document.getElementById('exerciseIntValue').textContent = intensityLabels[val];
-        }
-
-        function updateSleepLabel(val) {
-            document.getElementById('sleepValue').textContent = val + 'h';
-        }
-
-        function updateSleepQualityLabel(val) {
-            document.getElementById('sleepQualValue').textContent = qualityLabels[val - 1];
-        }
-
-        function updateStressLabel(val) {
-            document.getElementById('stressValue').textContent = stressLabels[val - 1];
-        }
-
-        function updateDietLabel(val) {
-            document.getElementById('dietValue').textContent = qualityLabels[val - 1];
-        }
-
-        // Main calculation function
-        function calculateBiologicalAge() {
-            // Get values
-            const age = parseInt(document.getElementById('age').value);
-            const gender = document.getElementById('gender').value;
-            const weight = parseFloat(document.getElementById('weight').value);
-            const height = parseFloat(document.getElementById('height').value);
-            const waist = parseFloat(document.getElementById('waist').value) || 0;
-            const hip = parseFloat(document.getElementById('hip').value) || 1;
-
-            const exerciseFreq = parseInt(document.getElementById('exerciseFreq').value);
-            const exerciseInt = parseInt(document.getElementById('exerciseInt').value);
-            const sleepHours = parseFloat(document.getElementById('sleepHours').value);
-            const sleepQuality = parseInt(document.getElementById('sleepQuality').value);
-            const stress = parseInt(document.getElementById('stress').value);
-            const diet = parseInt(document.getElementById('diet').value);
-            const smoking = parseInt(document.getElementById('smoking').value);
-            const alcohol = parseInt(document.getElementById('alcohol').value);
-
-            // Calculate BMI
-            const heightM = height / 100;
-            const bmi = weight / (heightM * heightM);
-
-            // Base biological age
-            let bioAge = age;
-
-            // BMI adjustment
-            if (bmi < 18.5) {
-                bioAge += 1.5;
-            } else if (bmi > 30) {
-                bioAge += 3.0;
-            } else if (bmi > 25) {
-                bioAge += 1.0;
-            } else if (bmi >= 22 && bmi <= 25) {
-                bioAge -= 1.0;
-            }
-
-            // WHR adjustment
-            const whr = waist / hip;
-            if (gender === 'male' && whr > 0.95) {
-                bioAge += 1.5;
-            } else if (gender === 'female' && whr > 0.85) {
-                bioAge += 1.5;
-            }
-
-            // Exercise
-            const exerciseScore = (exerciseFreq * exerciseInt) / 12;
-            bioAge -= exerciseScore * 2.5;
-
-            // Sleep
-            if (sleepHours >= 7 && sleepHours <= 9 && sleepQuality >= 4) {
-                bioAge -= 1.5;
-            } else if (sleepHours < 6 || sleepQuality <= 2) {
-                bioAge += 1.5;
-            }
-
-            // Stress
-            if (stress >= 4) {
-                bioAge += 1.0;
-            } else if (stress <= 2) {
-                bioAge -= 0.5;
-            }
-
-            // Diet
-            if (diet >= 4) {
-                bioAge -= 1.0;
-            } else if (diet <= 2) {
-                bioAge += 1.0;
-            }
-
-            // Smoking
-            const smokingPenalty = [0, 1.5, 3.0, 5.0];
-            bioAge += smokingPenalty[Math.min(smoking, 3)];
-
-            // Alcohol
-            if (alcohol >= 3) {
-                bioAge += 1.0;
-            }
-
-            // Calculate results
-            const ageDiff = bioAge - age;
-            const velocity = bioAge / age;
-
-            // Lifestyle score
-            let lifestyle = 50;
-            lifestyle += Math.min(exerciseScore * 1.5, 20);
-            if (sleepHours >= 7 && sleepHours <= 9) lifestyle += 10;
-            if (sleepQuality >= 4) lifestyle += 5;
-            lifestyle += (diet - 3) * 3;
-            lifestyle += (5 - stress) * 2;
-            if (smoking === 0) lifestyle += 15;
-            else if (smoking === 1) lifestyle += 5;
-            if (alcohol <= 1) lifestyle += 5;
-            lifestyle = Math.max(0, Math.min(100, lifestyle));
-
-            // Metabolic score
-            let metabolic = 100;
-            if (bmi < 18.5 || bmi > 30) metabolic -= 20;
-            else if (bmi > 25) metabolic -= 10;
-
-            // Cardiovascular score
-            let cardiovascular = 100;
-            if (smoking > 0) cardiovascular -= 15 * smoking;
-
-            // Longevity score
-            const longevity = Math.round((lifestyle + metabolic + cardiovascular) / 3);
-
-            // BMI category
-            let bmiCategory, bmiClass;
-            if (bmi < 18.5) {
-                bmiCategory = 'Underweight';
-                bmiClass = 'warning';
-            } else if (bmi < 25) {
-                bmiCategory = 'Normal';
-                bmiClass = 'normal';
-            } else if (bmi < 30) {
-                bmiCategory = 'Overweight';
-                bmiClass = 'overweight';
-            } else {
-                bmiCategory = 'Obese';
-                bmiClass = 'obese';
-            }
-
-            // Interpretation
-            let interpretation;
-            if (ageDiff < -3) {
-                interpretation = "Your biological age is significantly younger than your chronological age. Excellent lifestyle habits!";
-            } else if (ageDiff < 0) {
-                interpretation = "Your biological age is younger than your chronological age. Keep up the good work!";
-            } else if (ageDiff < 3) {
-                interpretation = "Your biological age is close to your chronological age. Small improvements can make a big difference.";
-            } else {
-                interpretation = "Your biological age is older than your chronological age. Don't worry - lifestyle changes can reverse this.";
-            }
-
-            // Update UI
-            document.getElementById('resultChrono').textContent = age;
-            document.getElementById('resultBio').textContent = Math.round(bioAge);
-            
-            const diffElement = document.getElementById('ageDiff');
-            if (ageDiff < 0) {
-                diffElement.textContent = `${Math.round(Math.abs(ageDiff))} years younger`;
-                diffElement.className = 'age-diff negative';
-            } else {
-                diffElement.textContent = `${Math.round(ageDiff)} years older`;
-                diffElement.className = 'age-diff positive';
-            }
-
-            document.getElementById('longevityScore').textContent = longevity;
-            document.getElementById('lifestyleScore').textContent = lifestyle;
-            document.getElementById('metabolicScore').textContent = metabolic;
-            document.getElementById('cardioScore').textContent = cardiovascular;
-            document.getElementById('bmiValue').textContent = bmi.toFixed(1);
-            
-            const bmiCatElement = document.getElementById('bmiCategory');
-            bmiCatElement.textContent = bmiCategory;
-            bmiCatElement.className = 'bmi-category ' + bmiClass;
-            
-            document.getElementById('interpretation').textContent = interpretation;
-
-            // Update score circle
-            const scoreDeg = (longevity / 100) * 360;
-            document.getElementById('scoreCircle').style.setProperty('--score-deg', scoreDeg + 'deg');
-
-            // Show results
-            document.getElementById('results').classList.add('show');
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        // Auto-redirect if already logged in
+        const userId = localStorage.getItem('longevity_user_id');
+        if (userId) {
+            window.location.href = 'unified-dashboard.html';
         }
     </script>
 </body>
