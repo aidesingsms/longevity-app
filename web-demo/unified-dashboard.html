@@ -804,104 +804,192 @@
         </main>
     </div>
 
+    <script src="supabase-config.js"></script>
     <script>
-        // Health Trends Chart
-        const ctx = document.getElementById('healthChart').getContext('2d');
+        // Current user (in production, this comes from auth)
+        const CURRENT_USER_ID = 'demo-user-123';
         
-        // Generate sample data for 30 days
-        const days = Array.from({length: 30}, (_, i) => `Day ${i + 1}`);
-        const healthScores = [78, 79, 80, 79, 81, 82, 81, 83, 84, 83, 85, 84, 86, 85, 87, 86, 88, 87, 89, 88, 90, 89, 91, 90, 92, 91, 93, 92, 94, 95];
-        const heartRate = [75, 74, 74, 73, 73, 72, 72, 71, 71, 70, 70, 69, 69, 68, 68, 67, 67, 66, 66, 65, 65, 64, 64, 63, 63, 62, 62, 61, 61, 60];
-        
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: days,
-                datasets: [{
-                    label: 'Health Score',
-                    data: healthScores,
-                    borderColor: '#00d4ff',
-                    backgroundColor: 'rgba(0, 212, 255, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4
-                }, {
-                    label: 'Resting HR',
-                    data: heartRate,
-                    borderColor: '#48bb78',
-                    backgroundColor: 'transparent',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    tension: 0.4,
-                    yAxisID: 'y1'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        ticks: {
-                            color: '#718096'
-                        }
-                    },
-                    y: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        ticks: {
-                            color: '#718096'
-                        },
-                        min: 60,
-                        max: 100
-                    },
-                    y1: {
-                        position: 'right',
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            color: '#48bb78'
-                        },
-                        min: 55,
-                        max: 80
-                    }
+        // Load dashboard data from Supabase
+        async function loadDashboardData() {
+            try {
+                showLoading(true);
+                
+                // Load latest biomarker analysis
+                const biomarker = await longevityDB.getLatestBiomarkerAnalysis(CURRENT_USER_ID);
+                if (biomarker) {
+                    updateBiomarkerCard(biomarker);
                 }
+                
+                // Load daily metrics
+                const today = new Date().toISOString().split('T')[0];
+                const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                const metrics = await longevityDB.getDailyMetrics(CURRENT_USER_ID, thirtyDaysAgo, today);
+                
+                if (metrics && metrics.length > 0) {
+                    updateHealthScore(metrics);
+                    updateChart(metrics);
+                }
+                
+                // Load wearable connections
+                const connections = await longevityDB.getWearableConnections(CURRENT_USER_ID);
+                updateWearableStatus(connections);
+                
+                // Load AI insights
+                const insights = await longevityDB.getInsights(CURRENT_USER_ID, true);
+                updateInsights(insights);
+                
+                // Load digital twin
+                const twin = await longevityDB.getDigitalTwin(CURRENT_USER_ID);
+                if (twin) {
+                    updateDigitalTwinStatus(twin);
+                }
+                
+                showLoading(false);
+                console.log('✅ Dashboard data loaded from Supabase');
+                
+            } catch (error) {
+                console.error('❌ Error loading data:', error);
+                showLoading(false);
+                // Fall back to demo data
+                loadDemoData();
             }
-        });
-
-        // Sync all data
-        function syncAllData() {
-            const btn = document.querySelector('.btn-primary');
-            const originalContent = btn.innerHTML;
+        }
+        
+        function updateBiomarkerCard(biomarker) {
+            const bioAgeEl = document.querySelector('.dashboard-card:nth-child(1) .breakdown-value');
+            if (bioAgeEl && biomarker.biological_age) {
+                bioAgeEl.textContent = biomarker.biological_age;
+            }
+        }
+        
+        function updateHealthScore(metrics) {
+            const latest = metrics[metrics.length - 1];
+            if (latest && latest.overall_score) {
+                const scoreEl = document.querySelector('.health-score-value');
+                if (scoreEl) scoreEl.textContent = latest.overall_score;
+            }
+        }
+        
+        function updateWearableStatus(connections) {
+            const wearableCard = document.querySelector('.source-card:nth-child(2) .source-status');
+            if (wearableCard) {
+                const connected = connections.some(c => c.is_connected);
+                wearableCard.textContent = connected ? '✓ Connected' : 'Tap to connect';
+                wearableCard.className = 'source-status ' + (connected ? 'connected' : '');
+            }
+        }
+        
+        function updateDigitalTwinStatus(twin) {
+            const twinCard = document.querySelector('.source-card:nth-child(4) .source-status');
+            if (twinCard) {
+                const avgHealth = Math.round((twin.heart_health + twin.lung_health + twin.liver_health + twin.kidney_health + twin.brain_health + twin.gut_health) / 6);
+                twinCard.textContent = `✓ Health: ${avgHealth}%`;
+                twinCard.className = 'source-status connected';
+            }
+        }
+        
+        function updateInsights(insights) {
+            const container = document.querySelector('.insight-list');
+            if (!container || insights.length === 0) return;
             
+            container.innerHTML = insights.slice(0, 4).map(insight => `
+                <div class="insight-item" data-id="${insight.id}">
+                    <div class="insight-icon">${getInsightIcon(insight.insight_type)}</div>
+                    <div class="insight-content">
+                        <h4>${insight.title}</h4>
+                        <p>${insight.description}</p>
+                        ${insight.recommendations ? `<div class="insight-action">${insight.recommendations.join(' • ')}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function getInsightIcon(type) {
+            const icons = {
+                sleep: '💤',
+                heart: '❤️',
+                activity: '🏃',
+                biomarker: '🔬',
+                general: '💡'
+            };
+            return icons[type] || '💡';
+        }
+        
+        function updateChart(metrics) {
+            const chart = Chart.getChart('healthChart');
+            if (!chart) return;
+            
+            const labels = metrics.map(m => {
+                const date = new Date(m.date);
+                return `${date.getMonth() + 1}/${date.getDate()}`;
+            });
+            
+            const scores = metrics.map(m => m.overall_score || 70);
+            
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = scores;
+            chart.update();
+        }
+        
+        function showLoading(show) {
+            const btn = document.querySelector('.btn-primary');
+            if (btn) {
+                btn.disabled = show;
+                btn.innerHTML = show ? '<i class="fas fa-spinner fa-spin"></i> Loading...' : '<i class="fas fa-sync"></i> Sync All';
+            }
+        }
+        
+        function loadDemoData() {
+            console.log('📦 Using demo data');
+            // Keep existing demo data in HTML
+        }
+        
+        // Override sync function
+        async function syncAllData() {
+            const btn = document.querySelector('.btn-primary');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
             btn.disabled = true;
             
-            setTimeout(() => {
-                btn.innerHTML = '<i class="fas fa-check"></i> Synced!';
+            try {
+                // Simulate fetching from wearables and saving to Supabase
+                const today = new Date().toISOString().split('T')[0];
                 
+                // Save demo daily metrics
+                await longevityDB.saveDailyMetrics({
+                    user_id: CURRENT_USER_ID,
+                    date: today,
+                    steps: 8432,
+                    calories_burned: 450,
+                    resting_heart_rate: 72,
+                    hrv_ms: 65,
+                    sleep_duration_minutes: 443,
+                    sleep_score: 78,
+                    overall_score: 84
+                });
+                
+                // Reload data
+                await loadDashboardData();
+                
+                btn.innerHTML = '<i class="fas fa-check"></i> Synced!';
                 setTimeout(() => {
-                    btn.innerHTML = originalContent;
+                    btn.innerHTML = '<i class="fas fa-sync"></i> Sync All';
                     btn.disabled = false;
                 }, 2000);
-            }, 2000);
+                
+            } catch (error) {
+                console.error('Sync error:', error);
+                btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-sync"></i> Sync All';
+                    btn.disabled = false;
+                }, 2000);
+            }
         }
-
-        // Chart filter buttons
-        document.querySelectorAll('.chart-filter').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.chart-filter').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for database to initialize
+            setTimeout(loadDashboardData, 500);
         });
     </script>
 </body>

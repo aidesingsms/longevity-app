@@ -1,233 +1,149 @@
 // Supabase Configuration for AIDESING Longevity App
-// Replace with your actual Supabase credentials after setup
+// Active connection to live database
 
 const SUPABASE_CONFIG = {
-    // Your Supabase project URL
     url: 'https://lbqaeoqzflldiwtxlecd.supabase.co',
-    
-    // Your Supabase anon/public key
-    anonKey: 'sb_publishable_HfK2VZMmAglXlZm9dCKz_g_nOwI3RSH',
-    
-    // Optional: Service role key (only for server-side operations)
-    // serviceKey: 'your-service-key-here'
+    anonKey: 'sb_publishable_HfK2VZMmAglXlZm9dCKz_g_nOwI3RSH'
 };
 
-// Database instance (initialized after config is set)
+// Initialize database connection
 let longevityDB = null;
 
-// Initialize database connection
 function initializeDatabase() {
-    if (SUPABASE_CONFIG.url.includes('your-project')) {
-        console.warn('⚠️ Supabase not configured yet. Using localStorage fallback.');
-        return new LocalStorageDB();
-    }
-    
     longevityDB = new LongevityDatabase(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
     console.log('✅ Connected to Supabase');
     return longevityDB;
 }
 
-// LocalStorage fallback for demo/testing
-class LocalStorageDB {
-    constructor() {
-        this.prefix = 'longevity_';
-        console.log('📦 Using LocalStorage fallback');
+// Longevity Database Client
+class LongevityDatabase {
+    constructor(supabaseUrl, supabaseKey) {
+        this.baseUrl = `${supabaseUrl}/rest/v1`;
+        this.headers = {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json'
+        };
     }
-    
-    // User operations
-    async getUser(userId) {
-        const data = localStorage.getItem(`${this.prefix}user_${userId}`);
-        return data ? JSON.parse(data) : null;
-    }
-    
-    async updateUser(userId, updates) {
-        const existing = await this.getUser(userId) || {};
-        const updated = { ...existing, ...updates, updated_at: new Date().toISOString() };
-        localStorage.setItem(`${this.prefix}user_${userId}`, JSON.stringify(updated));
-        return updated;
-    }
-    
-    // Biomarker operations
-    async saveBiomarkerAnalysis(analysisData) {
-        const key = `${this.prefix}biomarker_${analysisData.user_id}`;
-        const existing = JSON.parse(localStorage.getItem(key) || '[]');
-        existing.push({ ...analysisData, id: Date.now().toString() });
-        localStorage.setItem(key, JSON.stringify(existing));
-        return analysisData;
-    }
-    
-    async getLatestBiomarkerAnalysis(userId) {
-        const key = `${this.prefix}biomarker_${userId}`;
-        const analyses = JSON.parse(localStorage.getItem(key) || '[]');
-        return analyses.sort((a, b) => new Date(b.analysis_date) - new Date(a.analysis_date))[0] || null;
-    }
-    
-    // Daily metrics
-    async saveDailyMetrics(userId, date, metrics) {
-        const key = `${this.prefix}metrics_${userId}_${date}`;
-        localStorage.setItem(key, JSON.stringify({ ...metrics, date }));
-        return metrics;
-    }
-    
-    async getDailyMetrics(userId, startDate, endDate) {
-        const metrics = [];
-        const start = new Date(startDate);
-        const end = new Date(endDate);
+
+    async request(endpoint, options = {}) {
+        const url = `${this.baseUrl}${endpoint}`;
+        const response = await fetch(url, {
+            ...options,
+            headers: { ...this.headers, ...options.headers }
+        });
         
-        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-            const dateStr = d.toISOString().split('T')[0];
-            const key = `${this.prefix}metrics_${userId}_${dateStr}`;
-            const data = localStorage.getItem(key);
-            if (data) {
-                metrics.push(JSON.parse(data));
-            }
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error);
         }
-        
-        return metrics;
+        return response.json();
     }
-    
+
+    // User operations
+    async createUser(userData) {
+        return this.request('/users', {
+            method: 'POST',
+            body: JSON.stringify(userData)
+        });
+    }
+
+    async getUser(userId) {
+        const results = await this.request(`/users?id=eq.${userId}`);
+        return results[0];
+    }
+
+    // Biomarker operations
+    async saveBiomarkerAnalysis(data) {
+        return this.request('/biomarker_analyses', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    }
+
+    async getLatestBiomarkerAnalysis(userId) {
+        const results = await this.request(`/biomarker_analyses?user_id=eq.${userId}&order=analysis_date.desc&limit=1`);
+        return results[0];
+    }
+
+    // Daily metrics
+    async saveDailyMetrics(data) {
+        return this.request('/daily_health_metrics', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    }
+
+    async getDailyMetrics(userId, startDate, endDate) {
+        return this.request(`/daily_health_metrics?user_id=eq.${userId}&date=gte.${startDate}&date=lte.${endDate}&order=date.desc`);
+    }
+
+    async getLatestDailyMetrics(userId) {
+        const today = new Date().toISOString().split('T')[0];
+        const results = await this.request(`/daily_health_metrics?user_id=eq.${userId}&date=eq.${today}`);
+        return results[0];
+    }
+
     // Wearable connections
     async getWearableConnections(userId) {
-        const key = `${this.prefix}wearables_${userId}`;
-        return JSON.parse(localStorage.getItem(key) || '[]');
+        return this.request(`/wearable_connections?user_id=eq.${userId}`);
     }
-    
-    async connectWearable(userId, provider, data) {
-        const key = `${this.prefix}wearables_${userId}`;
-        const existing = JSON.parse(localStorage.getItem(key) || '[]');
-        const filtered = existing.filter(w => w.provider !== provider);
-        filtered.push({ user_id: userId, provider, ...data, is_connected: true });
-        localStorage.setItem(key, JSON.stringify(filtered));
-        return data;
+
+    async connectWearable(data) {
+        return this.request('/wearable_connections', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
     }
-    
+
     // AI Insights
-    async createInsight(userId, insightData) {
-        const key = `${this.prefix}insights_${userId}`;
-        const existing = JSON.parse(localStorage.getItem(key) || '[]');
-        const insight = { ...insightData, id: Date.now().toString(), is_read: false };
-        existing.push(insight);
-        localStorage.setItem(key, JSON.stringify(existing));
-        return insight;
-    }
-    
     async getInsights(userId, unreadOnly = false) {
-        const key = `${this.prefix}insights_${userId}`;
-        const insights = JSON.parse(localStorage.getItem(key) || '[]');
-        return unreadOnly ? insights.filter(i => !i.is_read) : insights;
+        let url = `/ai_insights?user_id=eq.${userId}&order=generated_at.desc`;
+        if (unreadOnly) url += '&is_read=eq.false';
+        return this.request(url);
     }
-    
+
+    async createInsight(data) {
+        return this.request('/ai_insights', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    }
+
+    async markInsightRead(insightId) {
+        return this.request(`/ai_insights?id=eq.${insightId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ is_read: true })
+        });
+    }
+
     // Digital Twin
     async getDigitalTwin(userId) {
-        const key = `${this.prefix}twin_${userId}`;
-        const data = localStorage.getItem(key);
-        return data ? JSON.parse(data) : this.getDefaultTwin();
+        const results = await this.request(`/digital_twins?user_id=eq.${userId}`);
+        return results[0];
     }
-    
-    async updateDigitalTwin(userId, updates) {
-        const key = `${this.prefix}twin_${userId}`;
-        const existing = await this.getDigitalTwin(userId);
-        const updated = { ...existing, ...updates, last_updated: new Date().toISOString() };
-        localStorage.setItem(key, JSON.stringify(updated));
-        return updated;
+
+    async updateDigitalTwin(userId, data) {
+        return this.request(`/digital_twins?user_id=eq.${userId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ ...data, last_updated: new Date().toISOString() })
+        });
     }
-    
-    getDefaultTwin() {
-        return {
-            heart_health: 95,
-            lung_health: 90,
-            liver_health: 85,
-            kidney_health: 88,
-            brain_health: 92,
-            gut_health: 80
-        };
-    }
-    
-    // Aggregated queries
+
+    // Aggregated data
     async getWeeklySummary(userId) {
-        const endDate = new Date().toISOString().split('T')[0];
-        const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-        const metrics = await this.getDailyMetrics(userId, startDate, endDate);
-        
-        if (metrics.length === 0) return null;
-        
-        const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
-        
-        return {
-            week_start: startDate,
-            avg_steps: Math.round(avg(metrics.map(m => m.steps).filter(Boolean)) || 0),
-            avg_sleep_minutes: Math.round(avg(metrics.map(m => m.sleep_duration_minutes).filter(Boolean)) || 0),
-            avg_resting_hr: Math.round(avg(metrics.map(m => m.resting_heart_rate).filter(Boolean)) || 0),
-            avg_hrv: Math.round(avg(metrics.map(m => m.hrv_ms).filter(Boolean)) || 0),
-            days_logged: metrics.length
-        };
+        const results = await this.request(`/weekly_health_summary?user_id=eq.${userId}&limit=1`);
+        return results[0];
     }
-    
+
     async getHealthScoreHistory(userId, days = 30) {
         const endDate = new Date().toISOString().split('T')[0];
         const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-        const metrics = await this.getDailyMetrics(userId, startDate, endDate);
-        
-        return metrics.map(m => ({
-            date: m.date,
-            health_score: m.overall_score || 70,
-            activity_score: m.activity_score || 70,
-            sleep_score: m.sleep_score_computed || 70,
-            recovery_score: m.recovery_score || 70
-        })).reverse();
+        return this.request(`/daily_health_metrics?user_id=eq.${userId}&date=gte.${startDate}&date=lte.${endDate}&order=date.asc`);
     }
 }
 
-// Demo data generator for testing
-function generateDemoData(userId) {
-    const db = new LocalStorageDB();
-    const today = new Date();
-    
-    // Generate 30 days of metrics
-    for (let i = 0; i < 30; i++) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
-        
-        db.saveDailyMetrics(userId, dateStr, {
-            steps: 6000 + Math.floor(Math.random() * 6000),
-            calories_burned: 350 + Math.floor(Math.random() * 300),
-            active_minutes: 30 + Math.floor(Math.random() * 60),
-            resting_heart_rate: 60 + Math.floor(Math.random() * 15),
-            hrv_ms: 50 + Math.floor(Math.random() * 30),
-            sleep_duration_minutes: 400 + Math.floor(Math.random() * 120),
-            sleep_score_computed: 70 + Math.floor(Math.random() * 25),
-            overall_score: 75 + Math.floor(Math.random() * 20)
-        });
-    }
-    
-    // Add sample insights
-    db.createInsight(userId, {
-        insight_type: 'sleep',
-        title: 'Sleep Optimization Needed',
-        description: 'Your deep sleep has decreased 15% over the past week.',
-        severity: 'warning',
-        recommendations: ['Take magnesium', 'Consistent bedtime']
-    });
-    
-    db.createInsight(userId, {
-        insight_type: 'heart',
-        title: 'Cardiovascular Health Improving',
-        description: 'Great news! Your resting heart rate has decreased by 3 BPM.',
-        severity: 'positive',
-        recommendations: ['Keep current exercise routine']
-    });
-    
-    console.log('✅ Demo data generated');
-}
-
-// Initialize on page load
+// Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
-    longevityDB = initializeDatabase();
-    
-    // Generate demo data if none exists
-    const demoUserId = 'demo-user-123';
-    if (!localStorage.getItem(`longevity_user_${demoUserId}`)) {
-        generateDemoData(demoUserId);
-    }
+    initializeDatabase();
 });
