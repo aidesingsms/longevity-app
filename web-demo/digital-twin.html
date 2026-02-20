@@ -944,8 +944,142 @@
             renderer.setSize(canvas.clientWidth, canvas.clientHeight);
         });
 
+        // Load data from localStorage (shared with multi-biomarker analysis)
+        function loadBiomarkerData() {
+            const data = JSON.parse(localStorage.getItem('longevityData') || '{}');
+            
+            if (data.biologicalAge) {
+                document.getElementById('ageDisplay').textContent = Math.round(data.biologicalAge) + ' years';
+                document.getElementById('ageSlider').value = Math.round(data.biologicalAge);
+            }
+            
+            // Update biomarker cards
+            if (data.biomarkers) {
+                const b = data.biomarkers;
+                
+                // Cardiovascular
+                if (b.cardiovascular) {
+                    document.getElementById('cardioValue').textContent = b.cardiovascular;
+                    document.getElementById('cardioBar').style.width = b.cardiovascular + '%';
+                }
+                
+                // Metabolic
+                if (b.metabolic) {
+                    document.getElementById('metabolicValue').textContent = b.metabolic;
+                    document.getElementById('metabolicBar').style.width = b.metabolic + '%';
+                }
+                
+                // Respiratory (estimated from posture and lifestyle)
+                const respScore = Math.round((b.posture || 75) * 0.6 + (b.metabolic || 75) * 0.4);
+                document.getElementById('respValue').textContent = respScore;
+                document.getElementById('respBar').style.width = respScore + '%';
+                
+                // Cognitive (estimated from sleep and stress)
+                const cogScore = Math.round((b.cognitive || 80) * 0.7 + (b.metabolic || 75) * 0.3);
+                document.getElementById('cognitiveValue').textContent = cogScore;
+                document.getElementById('cognitiveBar').style.width = cogScore + '%';
+            }
+            
+            // Update body visualization based on BMI
+            if (data.bmi) {
+                updateBodyShape(data.bmi);
+            }
+            
+            // Update organ health based on biomarkers
+            updateOrganHealth(data.biomarkers);
+        }
+
+        // Update 3D body shape based on BMI
+        function updateBodyShape(bmi) {
+            if (!bodyMesh) return;
+            
+            const torso = bodyMesh.children.find(c => c.geometry.type === 'CylinderGeometry' && c.position.y === 1.25);
+            const hips = bodyMesh.children.find(c => c.geometry.type === 'CylinderGeometry' && c.position.y === 0.92);
+            
+            if (bmi < 18.5) {
+                // Underweight - thinner
+                if (torso) torso.scale.set(0.85, 1, 0.85);
+                if (hips) hips.scale.set(0.9, 1, 0.9);
+            } else if (bmi > 30) {
+                // Obese - wider
+                if (torso) torso.scale.set(1.3, 1, 1.3);
+                if (hips) hips.scale.set(1.25, 1, 1.25);
+            } else if (bmi > 25) {
+                // Overweight - slightly wider
+                if (torso) torso.scale.set(1.15, 1, 1.15);
+                if (hips) hips.scale.set(1.1, 1, 1.1);
+            } else {
+                // Normal
+                if (torso) torso.scale.set(1, 1, 1);
+                if (hips) hips.scale.set(1, 1, 1);
+            }
+        }
+
+        // Update organ colors based on health scores
+        function updateOrganHealth(biomarkers) {
+            if (!internalGroup || !biomarkers) return;
+            
+            // Heart color based on cardiovascular score
+            const heart = internalGroup.children.find(c => c.name === 'heart');
+            if (heart && biomarkers.cardiovascular) {
+                const score = biomarkers.cardiovascular;
+                if (score >= 85) {
+                    heart.material.color.setHex(0xff3366); // Healthy pink
+                    heart.material.emissive.setHex(0xff3366);
+                } else if (score >= 70) {
+                    heart.material.color.setHex(0xff6633); // Warning orange
+                    heart.material.emissive.setHex(0xff6633);
+                } else {
+                    heart.material.color.setHex(0xff0000); // Danger red
+                    heart.material.emissive.setHex(0xff0000);
+                }
+            }
+            
+            // Lungs color based on posture/respiratory
+            const lungs = internalGroup.children.filter(c => c.name === 'lungs');
+            const respScore = biomarkers.posture || 75;
+            lungs.forEach(lung => {
+                if (respScore >= 80) {
+                    lung.material.color.setHex(0xff6b6b); // Healthy
+                } else if (respScore >= 65) {
+                    lung.material.color.setHex(0xffaa66); // Warning
+                } else {
+                    lung.material.color.setHex(0xcc6666); // Danger
+                }
+            });
+            
+            // Liver color based on metabolic
+            const liver = internalGroup.children.find(c => c.name === 'liver');
+            if (liver && biomarkers.metabolic) {
+                const score = biomarkers.metabolic;
+                if (score >= 80) {
+                    liver.material.color.setHex(0x8b4513); // Normal brown
+                } else if (score >= 65) {
+                    liver.material.color.setHex(0xaa6633); // Warning
+                } else {
+                    liver.material.color.setHex(0xcc9966); // Fatty liver indication
+                }
+            }
+            
+            // Brain color based on cognitive/sleep
+            const brain = internalGroup.children.find(c => c.name === 'brain');
+            if (brain) {
+                const cogScore = biomarkers.cognitive || 80;
+                if (cogScore >= 85) {
+                    brain.material.color.setHex(0xffc0cb); // Healthy pink
+                } else if (cogScore >= 70) {
+                    brain.material.color.setHex(0xffd0aa); // Warning
+                } else {
+                    brain.material.color.setHex(0xffaaaa); // Danger
+                }
+            }
+        }
+
         // Initialize when page loads
-        window.addEventListener('load', init3D);
+        window.addEventListener('load', () => {
+            init3D();
+            loadBiomarkerData();
+        });
     </script>
 </body>
 </html>

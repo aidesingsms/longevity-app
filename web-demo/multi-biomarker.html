@@ -746,6 +746,14 @@
             <div class="results-grid" id="resultsGrid">
                 <!-- Results will be populated by JavaScript -->
             </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="digital-twin.html" style="text-decoration: none;">
+                    <button style="background: linear-gradient(135deg, var(--primary-light), var(--accent)); border: none; padding: 16px 32px; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px var(--accent-glow);">
+                        🧬 View Your 3D Digital Twin
+                    </button>
+                </a>
+            </div>
         </section>
 
         <footer class="footer">
@@ -961,6 +969,26 @@
                 // Populate detailed results
                 populateResults();
 
+                // Save data to localStorage for Digital Twin
+                saveToLocalStorage({
+                    chronologicalAge: age,
+                    biologicalAge: bioAge,
+                    ageDifference: ageDiff,
+                    bmi: bmi,
+                    biomarkers: {
+                        posture: biomarkers.posture,
+                        skin: biomarkers.skin,
+                        tongue: biomarkers.tongue,
+                        nail: biomarkers.nail,
+                        bmi: biomarkers.bmi,
+                        metabolic: biomarkers.metabolic,
+                        cardiovascular: Math.floor((biomarkers.bmi || 75) * 0.4 + (biomarkers.posture || 75) * 0.6),
+                        cognitive: Math.floor((100 - (stress - 1) * 15) * 0.7 + (biomarkers.metabolic || 75) * 0.3)
+                    },
+                    photos: photos,
+                    timestamp: new Date().toISOString()
+                });
+
                 // Show results
                 document.getElementById('results').classList.add('show');
                 document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
@@ -1048,6 +1076,12 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        // Save data to localStorage for Digital Twin integration
+        function saveToLocalStorage(data) {
+            localStorage.setItem('longevityData', JSON.stringify(data));
+            console.log('Data saved to localStorage:', data);
         }
     </script>
 </body>
