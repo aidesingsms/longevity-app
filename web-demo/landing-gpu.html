@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIDESING AI Cloud - GPU Power for Everyone</title>
+    <title>AIDESING AI Agents - Tu Asistente OpenClaw Listo</title>
     <style>
         * {
             margin: 0;
@@ -51,8 +51,20 @@
             text-align: center;
         }
 
+        .hero-badge {
+            display: inline-block;
+            background: rgba(0, 212, 170, 0.15);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            color: #00d4aa;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: 3.2rem;
             font-weight: 800;
             margin-bottom: 20px;
             background: linear-gradient(135deg, #fff 0%, #a0a8ff 100%);
@@ -64,7 +76,7 @@
         .hero p {
             font-size: 1.3rem;
             color: rgba(255,255,255,0.7);
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto 40px;
         }
 
@@ -110,15 +122,69 @@
             letter-spacing: 1px;
         }
 
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 0;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .how-it-works h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00d4aa, #00a8e8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0a0e27;
+            margin: 0 auto 20px;
+        }
+
+        .step h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .step p {
+            color: rgba(255,255,255,0.7);
+        }
+
         /* Features Section */
         .features {
             padding: 80px 0;
-            background: rgba(255,255,255,0.02);
         }
 
         .features h2 {
             text-align: center;
             font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .features-subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.6);
             margin-bottom: 60px;
         }
 
@@ -155,6 +221,52 @@
 
         .feature-card p {
             color: rgba(255,255,255,0.7);
+        }
+
+        /* Use Cases */
+        .use-cases {
+            padding: 80px 0;
+            background: rgba(0, 212, 170, 0.03);
+        }
+
+        .use-cases h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+        }
+
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .case-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 35px 30px;
+            transition: all 0.3s ease;
+        }
+
+        .case-card:hover {
+            border-color: rgba(0, 212, 170, 0.3);
+        }
+
+        .case-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .case-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .case-card p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
         }
 
         /* Pricing Section */
@@ -236,7 +348,7 @@
         }
 
         .pricing-features li {
-            padding: 10px 0;
+            padding: 12px 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             color: rgba(255,255,255,0.8);
         }
@@ -353,7 +465,7 @@
         /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
 
             .hero-stats {
@@ -378,22 +490,47 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h1>GPU Power for Everyone</h1>
-            <p>Accede a GPUs NVIDIA RTX 4090 y LLMs de última generación sin inversiones millonarias. Desde $20/mes.</p>
-            <a href="#pricing" class="cta-button">Ver Planes</a>
+            <div class="hero-badge">🚀 Lanzamiento Marzo 2026</div>
+            <h1>Tu Asistente OpenClaw Listo en Minutos</h1>
+            <p>No necesitas ser experto en IA. Obtén tu propio asistente inteligente con GPT-4 nivel de calidad, entrenado para tu negocio, sin configuración compleja.</p>
+            <a href="#pricing" class="cta-button">Obtener Mi Asistente</a>
             
             <div class="hero-stats">
                 <div class="stat">
-                    <div class="stat-number">2×</div>
-                    <div class="stat-label">RTX 4090</div>
+                    <div class="stat-number">&lt;5min</div>
+                    <div class="stat-label">Setup</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-number">48GB</div>
-                    <div class="stat-label">VRAM Total</div>
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Disponible</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-number">&lt;100ms</div>
-                    <div class="stat-label">Latencia</div>
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Privado</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2>¿Cómo Funciona?</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Elige Tu Plan</h3>
+                    <p>Selecciona el asistente que mejor se adapte a tus necesidades y presupuesto.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Personaliza</h3>
+                    <p>Configura el nombre, personalidad y conocimientos específicos de tu asistente.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Usa Inmediatamente</h3>
+                    <p>Tu asistente está listo. Conéctalo por Telegram, web, o API en minutos.</p>
                 </div>
             </div>
         </div>
@@ -402,37 +539,78 @@
     <!-- Features Section -->
     <section class="features">
         <div class="container">
-            <h2>¿Por qué AIDESING AI?</h2>
+            <h2>¿Qué Incluye Tu Asistente?</h2>
+            <p class="features-subtitle">Todo lo que necesitas para tener un asistente AI profesional</p>
+            
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Velocidad Extrema</h3>
-                    <p>GPUs RTX 4090 con inferencia en menos de 100ms. Ideal para chatbots y aplicaciones en tiempo real.</p>
+                    <div class="feature-icon">🤖</div>
+                    <h3>Asistente Personalizado</h3>
+                    <p>Tu propio asistente con nombre, personalidad y conocimientos adaptados a tu negocio o necesidades personales.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🧠</div>
-                    <h3>Modelos Avanzados</h3>
-                    <p>Accede a Llama 3.1 8B y 70B, Mixtral, y más. Desde tareas simples hasta análisis complejos.</p>
+                    <div class="feature-icon">💬</div>
+                    <h3>Multi-Canal</h3>
+                    <p>Conecta tu asistente a Telegram, WhatsApp, web, o integra vía API a tus sistemas existentes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>Memoria Persistente</h3>
+                    <p>Tu asistente recuerda conversaciones, preferencias y contexto. Cada interacción mejora la experiencia.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🔒</div>
-                    <h3>Seguridad Primero</h3>
-                    <p>Tus datos nunca se usan para entrenar. Conexiones cifradas y cumplimiento de privacidad.</p>
+                    <h3>100% Privado</h3>
+                    <p>Tus datos nunca se usan para entrenar modelos. Servidores en Tampa, Florida. Cumplimiento total.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <h3>Escalabilidad</h3>
-                    <p>Empieza pequeño y crece según necesites. Upgrade instantáneo entre planes.</p>
+                    <div class="feature-icon">⚡</div>
+                    <h3>Respuesta Rápida</h3>
+                    <p>Respuestas en menos de 1 segundo. Tecnología RTX 4090 para máxima velocidad.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">💰</div>
-                    <h3>Precio Justo</h3>
-                    <p>Sin costos ocultos. Paga solo por lo que usas. Cancela cuando quieras.</p>
+                    <div class="feature-icon">🛠️</div>
+                    <h3>Sin Configuración</h3>
+                    <p>Nosotros hacemos todo el trabajo técnico. Tú solo usas tu asistente desde el primer minuto.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🌐</div>
-                    <h3>Ubicación Estratégica</h3>
-                    <p>Servidores en Tampa, Florida. Baja latencia para toda América.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="use-cases">
+        <div class="container">
+            <h2>¿Para Quién Es?</h2>
+            <div class="cases-grid">
+                <div class="case-card">
+                    <div class="case-icon">👨‍💼</div>
+                    <h3>Profesionales</h3>
+                    <p>Asistente personal para emails, calendario, investigación y tareas administrativas.</p>
+                </div>
+                <div class="case-card">
+                    <div class="case-icon">🏢</div>
+                    <h3>Empresas Pequeñas</h3>
+                    <p>Atención al cliente 24/7, gestión de leads, y automatización de procesos.</p>
+                </div>
+                <div class="case-card">
+                    <div class="case-icon">👨‍🏫</div>
+                    <h3>Estudiantes</h3>
+                    <p>Tutor personal para cualquier materia, ayuda con investigaciones y organización.</p>
+                </div>
+                <div class="case-card">
+                    <div class="case-icon">🎨</div>
+                    <h3>Creadores</h3>
+                    <p>Asistente para brainstorming, edición, research y gestión de proyectos creativos.</p>
+                </div>
+                <div class="case-card">
+                    <div class="case-icon">🏥</div>
+                    <h3>Consultorios</h3>
+                    <p>Agendamiento de citas, recordatorios a pacientes, y gestión de información básica.</p>
+                </div>
+                <div class="case-card">
+                    <div class="case-icon">🏗️</div>
+                    <h3>Constructores</h3>
+                    <p>Seguimiento de proyectos, cotizaciones, y coordinación con proveedores.</p>
                 </div>
             </div>
         </div>
@@ -441,54 +619,57 @@
     <!-- Pricing Section -->
     <section class="pricing" id="pricing">
         <div class="container">
-            <h2>Planes Simples y Transparentes</h2>
+            <h2>Elige Tu Asistente</h2>
             <p class="pricing-subtitle">Sin contratos. Sin sorpresas. Cancela cuando quieras.</p>
             
             <div class="pricing-grid">
                 <!-- Básico -->
                 <div class="pricing-card">
-                    <h3>Básico</h3>
+                    <h3>Asistente Básico</h3>
                     <div class="price">$20<span>/mes</span></div>
                     <ul class="pricing-features">
-                        <li>200,000 tokens/mes</li>
+                        <li>200,000 mensajes/mes</li>
                         <li>Modelo: Llama 3.1 8B</li>
-                        <li>1 solicitud concurrente</li>
-                        <li>API access</li>
+                        <li>1 conversación concurrente</li>
+                        <li>Conexión Telegram</li>
+                        <li>Memoria básica</li>
                         <li>Soporte por email</li>
                     </ul>
-                    <a href="#waitlist" class="pricing-button">Unirse a lista</a>
+                    <a href="#waitlist" class="pricing-button">Reservar</a>
                 </div>
 
                 <!-- Starter (Popular) -->
                 <div class="pricing-card popular">
                     <div class="popular-badge">MÁS POPULAR</div>
-                    <h3>Starter</h3>
+                    <h3>Asistente Pro</h3>
                     <div class="price">$30<span>/mes</span></div>
                     <ul class="pricing-features">
-                        <li>600,000 tokens/mes</li>
+                        <li>600,000 mensajes/mes</li>
                         <li>Modelo: Llama 3.1 8B</li>
-                        <li>2 solicitudes concurrentes</li>
-                        <li>5% upscale a 70B</li>
-                        <li>API access + web interface</li>
+                        <li>2 conversaciones concurrentes</li>
+                        <li>Telegram + Web + WhatsApp</li>
+                        <li>Memoria avanzada</li>
+                        <li>Personalización de personalidad</li>
                         <li>Soporte prioritario</li>
                     </ul>
-                    <a href="#waitlist" class="pricing-button">Unirse a lista</a>
+                    <a href="#waitlist" class="pricing-button">Reservar</a>
                 </div>
 
                 <!-- Pro -->
                 <div class="pricing-card">
-                    <h3>Pro</h3>
+                    <h3>Asistente Ultra</h3>
                     <div class="price">$79<span>/mes</span></div>
                     <ul class="pricing-features">
-                        <li>1,000,000 tokens/mes</li>
-                        <li>Modelo: Llama 3.1 70B AWQ</li>
-                        <li>2 solicitudes concurrentes</li>
-                        <li>20% upscale automático</li>
-                        <li>API + Web + SDK</li>
+                        <li>1,000,000 mensajes/mes</li>
+                        <li>Modelo: Llama 3.1 70B (GPT-4 nivel)</li>
+                        <li>2 conversaciones concurrentes</li>
+                        <li>Todos los canales + API</li>
+                        <li>Memoria ilimitada</li>
+                        <li>Entrenamiento personalizado</li>
                         <li>Soporte 24/7</li>
-                        <li>Custom fine-tuning</li>
+                        <li>Integraciones custom</li>
                     </ul>
-                    <a href="#waitlist" class="pricing-button">Unirse a lista</a>
+                    <a href="#waitlist" class="pricing-button">Reservar</a>
                 </div>
             </div>
         </div>
@@ -498,11 +679,11 @@
     <section class="waitlist" id="waitlist">
         <div class="container">
             <h2>Lista de Espera</h2>
-            <p>Sé de los primeros en acceder. Lanzamiento en marzo 2026. Sin compromiso.</p>
+            <p>Sé de los primeros en obtener tu asistente. Lanzamiento en marzo 2026. Sin compromiso.</p>
             
             <form class="waitlist-form" onsubmit="handleSubmit(event)">
                 <input type="email" placeholder="tu@email.com" required>
-                <button type="submit">Reservar lugar</button>
+                <button type="submit">Reservar Mi Asistente</button>
             </form>
             
             <p style="margin-top: 30px; font-size: 0.9rem; color: rgba(255,255,255,0.5);">
@@ -526,14 +707,10 @@
         function handleSubmit(e) {
             e.preventDefault();
             const email = e.target.querySelector('input').value;
-            
-            // Aquí conectarías con tu backend
-            // Por ahora, mostramos un mensaje
             alert('¡Gracias! Te hemos agregado a la lista de espera.\n\nEmail: ' + email);
             e.target.reset();
         }
 
-        // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
