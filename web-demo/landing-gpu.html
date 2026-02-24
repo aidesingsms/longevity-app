@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIDESING AI Cloud - GPU Power for Everyone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f4b 50%, #0d1235 100%);
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4aa, #00a8e8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo span {
+            font-weight: 300;
+            opacity: 0.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0 60px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff 0%, #a0a8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.7);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #00d4aa, #00a8e8);
+            color: #0a0e27;
+            padding: 18px 48px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 212, 170, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(0, 212, 170, 0.4);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 60px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #00d4aa;
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px 30px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 170, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #00d4aa;
+        }
+
+        .feature-card p {
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 80px 0;
+        }
+
+        .pricing h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .pricing-subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 60px;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card.popular {
+            border-color: #00d4aa;
+            transform: scale(1.05);
+            box-shadow: 0 20px 60px rgba(0, 212, 170, 0.15);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #00d4aa, #00a8e8);
+            color: #0a0e27;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #00d4aa;
+            margin: 20px 0;
+        }
+
+        .price span {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.5);
+            font-weight: 400;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.8);
+        }
+
+        .pricing-features li:before {
+            content: "✓";
+            color: #00d4aa;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .pricing-button {
+            display: block;
+            background: transparent;
+            border: 2px solid #00d4aa;
+            color: #00d4aa;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .pricing-card.popular .pricing-button {
+            background: linear-gradient(135deg, #00d4aa, #00a8e8);
+            color: #0a0e27;
+            border: none;
+        }
+
+        .pricing-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Waitlist Section */
+        .waitlist {
+            padding: 80px 0;
+            background: rgba(0, 212, 170, 0.05);
+            text-align: center;
+        }
+
+        .waitlist h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .waitlist p {
+            color: rgba(255,255,255,0.7);
+            max-width: 500px;
+            margin: 0 auto 40px;
+        }
+
+        .waitlist-form {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .waitlist-form input {
+            flex: 1;
+            min-width: 250px;
+            padding: 18px 25px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .waitlist-form input:focus {
+            border-color: #00d4aa;
+            box-shadow: 0 0 20px rgba(0, 212, 170, 0.2);
+        }
+
+        .waitlist-form input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .waitlist-form button {
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #00d4aa, #00a8e8);
+            color: #0a0e27;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .waitlist-form button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 212, 170, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+        }
+
+        footer a {
+            color: #00d4aa;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .pricing-card.popular {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">AIDESING<span>AI</span></div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>GPU Power for Everyone</h1>
+            <p>Accede a GPUs NVIDIA RTX 4090 y LLMs de última generación sin inversiones millonarias. Desde $20/mes.</p>
+            <a href="#pricing" class="cta-button">Ver Planes</a>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">2×</div>
+                    <div class="stat-label">RTX 4090</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">48GB</div>
+                    <div class="stat-label">VRAM Total</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">&lt;100ms</div>
+                    <div class="stat-label">Latencia</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2>¿Por qué AIDESING AI?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Velocidad Extrema</h3>
+                    <p>GPUs RTX 4090 con inferencia en menos de 100ms. Ideal para chatbots y aplicaciones en tiempo real.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Modelos Avanzados</h3>
+                    <p>Accede a Llama 3.1 8B y 70B, Mixtral, y más. Desde tareas simples hasta análisis complejos.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Seguridad Primero</h3>
+                    <p>Tus datos nunca se usan para entrenar. Conexiones cifradas y cumplimiento de privacidad.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Escalabilidad</h3>
+                    <p>Empieza pequeño y crece según necesites. Upgrade instantáneo entre planes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Precio Justo</h3>
+                    <p>Sin costos ocultos. Paga solo por lo que usas. Cancela cuando quieras.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Ubicación Estratégica</h3>
+                    <p>Servidores en Tampa, Florida. Baja latencia para toda América.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2>Planes Simples y Transparentes</h2>
+            <p class="pricing-subtitle">Sin contratos. Sin sorpresas. Cancela cuando quieras.</p>
+            
+            <div class="pricing-grid">
+                <!-- Básico -->
+                <div class="pricing-card">
+                    <h3>Básico</h3>
+                    <div class="price">$20<span>/mes</span></div>
+                    <ul class="pricing-features">
+                        <li>200,000 tokens/mes</li>
+                        <li>Modelo: Llama 3.1 8B</li>
+                        <li>1 solicitud concurrente</li>
+                        <li>API access</li>
+                        <li>Soporte por email</li>
+                    </ul>
+                    <a href="#waitlist" class="pricing-button">Unirse a lista</a>
+                </div>
+
+                <!-- Starter (Popular) -->
+                <div class="pricing-card popular">
+                    <div class="popular-badge">MÁS POPULAR</div>
+                    <h3>Starter</h3>
+                    <div class="price">$30<span>/mes</span></div>
+                    <ul class="pricing-features">
+                        <li>600,000 tokens/mes</li>
+                        <li>Modelo: Llama 3.1 8B</li>
+                        <li>2 solicitudes concurrentes</li>
+                        <li>5% upscale a 70B</li>
+                        <li>API access + web interface</li>
+                        <li>Soporte prioritario</li>
+                    </ul>
+                    <a href="#waitlist" class="pricing-button">Unirse a lista</a>
+                </div>
+
+                <!-- Pro -->
+                <div class="pricing-card">
+                    <h3>Pro</h3>
+                    <div class="price">$79<span>/mes</span></div>
+                    <ul class="pricing-features">
+                        <li>1,000,000 tokens/mes</li>
+                        <li>Modelo: Llama 3.1 70B AWQ</li>
+                        <li>2 solicitudes concurrentes</li>
+                        <li>20% upscale automático</li>
+                        <li>API + Web + SDK</li>
+                        <li>Soporte 24/7</li>
+                        <li>Custom fine-tuning</li>
+                    </ul>
+                    <a href="#waitlist" class="pricing-button">Unirse a lista</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waitlist Section -->
+    <section class="waitlist" id="waitlist">
+        <div class="container">
+            <h2>Lista de Espera</h2>
+            <p>Sé de los primeros en acceder. Lanzamiento en marzo 2026. Sin compromiso.</p>
+            
+            <form class="waitlist-form" onsubmit="handleSubmit(event)">
+                <input type="email" placeholder="tu@email.com" required>
+                <button type="submit">Reservar lugar</button>
+            </form>
+            
+            <p style="margin-top: 30px; font-size: 0.9rem; color: rgba(255,255,255,0.5);">
+                🔒 Tu email está seguro. Sin spam. Cancela en cualquier momento.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2026 AIDESING SMART SOLUTIONS LLC. Tampa, Florida.</p>
+            <p style="margin-top: 10px;">
+                <a href="mailto:contact@aidesing.ai">contact@aidesing.ai</a> | 
+                <a href="https://github.com/aidesingsms">GitHub</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function handleSubmit(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input').value;
+            
+            // Aquí conectarías con tu backend
+            // Por ahora, mostramos un mensaje
+            alert('¡Gracias! Te hemos agregado a la lista de espera.\n\nEmail: ' + email);
+            e.target.reset();
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
