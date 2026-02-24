@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Asistente Virtual Personal - AIDESING AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255,255,255,0.95);
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 150px 0 100px;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            color: #ffd700;
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.95;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,215,0,0.2);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #ffd700;
+            color: #333;
+            padding: 20px 50px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        /* Demo Chat */
+        .demo-section {
+            background: white;
+            padding: 80px 0;
+        }
+
+        .demo-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .demo-header h3 {
+            color: #667eea;
+            font-size: 1.3rem;
+        }
+
+        .chat-message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-user {
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 20px 20px 5px 20px;
+            margin-left: 20%;
+            margin-bottom: 10px;
+        }
+
+        .chat-bot {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 15px 20px;
+            border-radius: 20px 20px 20px 5px;
+            margin-right: 20%;
+        }
+
+        .chat-bot strong {
+            color: #667eea;
+        }
+
+        /* Features */
+        .features {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: #333;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 40px 30px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feature-card p {
+            color: #666;
+        }
+
+        /* Pricing */
+        .pricing {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .pricing h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .pricing-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 60px;
+            font-size: 1.1rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .pricing-card.popular {
+            border: 3px solid #667eea;
+            transform: scale(1.05);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #667eea;
+            color: white;
+            padding: 8px 25px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .price {
+            font-size: 4rem;
+            font-weight: 800;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .price span {
+            font-size: 1rem;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            color: #555;
+        }
+
+        .pricing-features li:before {
+            content: "✓";
+            color: #667eea;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .pricing-button {
+            display: block;
+            background: #667eea;
+            color: white;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s;
+            margin-top: 30px;
+        }
+
+        .pricing-button:hover {
+            background: #5a6fd6;
+            transform: scale(1.05);
+        }
+
+        /* FAQ */
+        .faq {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .faq h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+        }
+
+        .faq-item {
+            max-width: 800px;
+            margin: 0 auto 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 25px 30px;
+            background: #f8f9fa;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            padding: 25px 30px;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+            color: white;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        footer {
+            padding: 50px 0;
+            background: #333;
+            color: white;
+            text-align: center;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .pricing-card.popular {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">🤖 AIDESING AI</div>
+                <div class="nav-links">
+                    <a href="#features">Características</a>
+                    <a href="#precios">Precios</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="#contacto">Contacto</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">🚀 Nuevo: Tu Asistente Virtual Personal</div>
+            <h1>Olvídate de las apps complicadas.<br>
+            <span>Solo mándale un WhatsApp.</span></h1>
+            
+            <p>Tu asistente virtual que te recuerda lo importante, organiza tu vida y responde tus preguntas. Todo por mensaje de texto. Sin descargar nada.</p>
+            
+            <a href="#precios" class="cta-button">🎯 Quiero mi asistente - Desde $29/mes</a>
+        </div>
+    </section>
+
+    <!-- Demo Chat -->
+    <section class="demo-section">
+        <div class="container">
+            <div class="demo-container">
+                <div class="demo-header">
+                    <h3>💬 Así de fácil es usarlo</h3>
+                    <p style="color: #666;">Solo chateas, como con cualquier persona</p>
+                </div>
+
+                <div class="chat-message">
+                    <div class="chat-user">Recuérdame llamar al doctor mañana a las 3pm</div>
+                    <div class="chat-bot"><strong>✅ Listo</strong><br>Te recordaré llamar al doctor mañana a las 3:00 PM. ¿Quieres que te avise 30 minutos antes también?</div>
+                </div>
+
+                <div class="chat-message">
+                    <div class="chat-user">Sí, por favor. También agrega leche a mi lista de compras</div>
+                    <div class="chat-bot"><strong>✅ Perfecto</strong><br>• Te avisaré a las 2:30 PM mañana<br>• Agregué "leche" a tu lista de compras</div>
+                </div>
+
+                <div class="chat-message">
+                    <div class="chat-user">Muéstrame mi lista</div>
+                    <div class="chat-bot"><strong>📋 Tu lista de compras:</strong><br>• Leche<br>• Pan (agregado ayer)<br>• Huevos (agregado ayer)<br><br>¿Algo más que necesites?</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2>¿Qué puede hacer por ti?</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <h3>Recordatorios Inteligentes</h3>
+                    <p>Nunca olvides una cita, medicina o tarea importante. Te avisa por WhatsApp en el momento justo.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🛒</div>
+                    <h3>Listas de Compras</h3>
+                    <p>Agrega items hablando. "Agrega leche" y listo. Tu lista siempre contigo en el teléfono.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3>Organiza tu Calendario</h3>
+                    <p>Conecta con Google Calendar. Agenda citas, eventos y te avisa antes de cada uno.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Respuestas Instantáneas</h3>
+                    <p>¿Necesitas información? Recetas? Datos? Solo pregunta. Como tener Google en tu WhatsApp.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🌤️</div>
+                    <h3>Clima y Tráfico</h3>
+                    <p>Te avisa si llevar paraguas. Te dice el tráfico antes de salir. Un paso adelante siempre.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Siempre Disponible</h3>
+                    <p>3 AM y necesitas recordar algo? Tu asistente está despierto. 24/7, los 365 días del año.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="precios">
+        <div class="container">
+            <h2>Elige tu plan</h2>
+            <p class="pricing-subtitle">Sin contratos. Cancela cuando quieras. 14 días de prueba gratis.</p>
+
+            <div class="pricing-grid">
+                <!-- Básico -->
+                <div class="pricing-card">
+                    <h3>Básico</h3>
+                    <div class="price">$29<span>/mes</span></div>
+                    
+                    <ul class="pricing-features">
+                        <li>Recordatorios ilimitados</li>
+                        <li>Listas de compras</li>
+                        <li>100 mensajes/mes</li>
+                        <li>Respuestas básicas</li>
+                        <li>Soporte por email</li>
+                    </ul>
+
+                    <a href="#" class="pricing-button">Empezar Prueba Gratis</a>
+                </div>
+
+                <!-- Pro -->
+                <div class="pricing-card popular">
+                    <div class="popular-badge">MÁS POPULAR</div>
+                    <h3>Pro</h3>
+                    <div class="price">$59<span>/mes</span></div>
+                    
+                    <ul class="pricing-features">
+                        <li>Todo lo del Básico</li>
+                        <li>Calendario Google/Outlook</li>
+                        <li>Resumen de emails</li>
+                        <li>500 mensajes/mes</li>
+                        <li>Búsquedas web avanzadas</li>
+                        <li>Soporte prioritario</li>
+                    </ul>
+
+                    <a href="#" class="pricing-button">Empezar Prueba Gratis</a>
+                </div>
+
+                <!-- Power -->
+                <div class="pricing-card">
+                    <h3>Power User</h3>
+                    <div class="price">$99<span>/mes</span></div>
+                    
+                    <ul class="pricing-features">
+                        <li>Todo lo del Pro</li>
+                        <li>Ayuda con código/programación</li>
+                        <li>Automatizaciones personalizadas</li>
+                        <li>2,000 mensajes/mes</li>
+                        <li>Análisis de datos básico</li>
+                        <li>Soporte 24/7</li>
+                    </ul>
+
+                    <a href="#" class="pricing-button">Empezar Prueba Gratis</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <h2>Preguntas Frecuentes</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    ¿Necesito descargar una app?
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    ¡No! Funciona por WhatsApp o Telegram. Solo agregas un número de teléfono a tus contactos y empiezas a chatear. Como con cualquier amigo.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    ¿Es seguro? ¿Mis datos están protegidos?
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutamente. Tus datos se almacenan en servidores seguros encriptados. Nunca vendemos tu información. Puedes pedir que borremos tus datos en cualquier momento.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    ¿Puedo cancelar cuando quiera?
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Sí. Sin contratos, sin penalizaciones. Cancelas y listo. Si cancelas durante la prueba gratis, nunca te cobramos nada.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    ¿Qué pasa si supero los mensajes del plan?
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Te avisamos cuando estés cerca del límite. Puedes upgradear tu plan temporalmente o esperar al siguiente mes. Nunca te cobramos sorpresas.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    ¿Funciona en cualquier país?
+                    <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Sí, funciona donde funcione WhatsApp o Telegram. Actualmente soportamos español e inglés. Estamos trabajando en más idiomas.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>¿Listo para simplificar tu vida?</h2>
+            <p>14 días gratis. Sin tarjeta de crédito. Sin compromiso.</p>
+
+            <a href="#precios" class="cta-button" style="background: white; color: #667eea;">🚀 Probar Gratis por 14 Días</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contacto">
+        <div class="container">
+            <p>© 2026 AIDESING AI. Todos los derechos reservados.</p>
+            <p style="margin-top: 10px;">
+                <a href="mailto:hola@aidesing.ai">hola@aidesing.ai</a> | 
+                Tampa, Florida
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple FAQ toggle
+        document.querySelectorAll('.faq-question').forEach(q => {
+            q.addEventListener('click', () => {
+                const answer = q.nextElementSibling;
+                const span = q.querySelector('span');
+                
+                if (answer.style.display === 'none' || !answer.style.display) {
+                    answer.style.display = 'block';
+                    span.textContent = '-';
+                } else {
+                    answer.style.display = 'none';
+                    span.textContent = '+';
+                }
+            });
+        });
+
+        // Hide FAQ answers initially
+        document.querySelectorAll('.faq-answer').forEach(a => {
+            a.style.display = 'none';
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
