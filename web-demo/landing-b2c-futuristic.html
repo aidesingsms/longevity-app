@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIDESING AI | Tu Asistente Neural Personal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4aa;
+            --secondary: #00a8e8;
+            --accent: #ff006e;
+            --dark: #0a0e27;
+            --darker: #050714;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--darker);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(0, 212, 170, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 168, 232, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 0, 110, 0.05) 0%, transparent 70%);
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(0, 212, 170, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 170, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 0;
+            z-index: 1000;
+            background: rgba(10, 14, 39, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 212, 170, 0.4); }
+            50% { box-shadow: 0 0 0 15px rgba(0, 212, 170, 0); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 40px 80px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            margin-bottom: 40px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(0, 212, 170, 0.2); }
+            to { box-shadow: 0 0 20px rgba(0, 212, 170, 0.4); }
+        }
+
+        .badge::before {
+            content: '●';
+            color: var(--primary);
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 30px;
+        }
+
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 600px;
+            margin: 0 auto 50px;
+            line-height: 1.6;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #000;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0, 212, 170, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--glass);
+            color: #fff;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        /* Holographic Card */
+        .holo-card {
+            max-width: 500px;
+            margin: 60px auto 0;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .holo-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(0, 212, 170, 0.1) 50%,
+                transparent 70%
+            );
+            animation: holoShine 3s linear infinite;
+        }
+
+        @keyframes holoShine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .chat-bubble {
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            border-radius: 20px 20px 20px 5px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-bubble.user {
+            background: rgba(0, 168, 232, 0.1);
+            border-color: rgba(0, 168, 232, 0.3);
+            border-radius: 20px 20px 5px 20px;
+            margin-left: 20%;
+        }
+
+        /* Features */
+        .features {
+            padding: 150px 40px;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 100px;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .section-header p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.2rem;
+        }
+
+        .features-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 212, 170, 0.3);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .feature-icon::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 23px;
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(10px);
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+        }
+
+        /* Pricing */
+        .pricing {
+            padding: 150px 40px;
+            background: linear-gradient(180deg, var(--darker) 0%, var(--dark) 100%);
+        }
+
+        .pricing-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .pricing-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 50px 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 0 60px rgba(0, 212, 170, 0.2);
+        }
+
+        .pricing-card.featured::before {
+            content: 'POPULAR';
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #000;
+            padding: 8px 40px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            transform: rotate(45deg);
+        }
+
+        .pricing-card h3 {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .price {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .price span {
+            font-size: 1rem;
+            opacity: 0.6;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 40px 0;
+        }
+
+        .pricing-features li {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .pricing-features li::before {
+            content: '→';
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .btn-pricing {
+            width: 100%;
+            padding: 18px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-pricing.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #000;
+        }
+
+        .btn-pricing.secondary {
+            background: transparent;
+            color: #fff;
+            border: 2px solid var(--glass-border);
+        }
+
+        .btn-pricing:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 212, 170, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 40px;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+            background: var(--darker);
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Header -->
+    <header>
+        <nav class="nav">
+            <div class="logo">
+                <div class="logo-icon">🤖</div>
+                AIDESING AI
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#">Docs</a>
+                <a href="#">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">Neural Assistant v2.0</div>
+            
+            <h1>
+                Tu cerebro digital.
+                <br>
+                <span class="gradient-text">Siempre conectado.</span>
+            </h1>
+            
+            <p>
+                Un asistente neural que aprende de ti, anticipa tus necesidades 
+                y ejecuta tareas complejas. Solo habla. Él entiende.
+            </p>
+            
+            <div class="cta-group">
+                <a href="#pricing" class="btn-primary">Activar Neural Link →</a>
+                <a href="#" class="btn-secondary">Ver Demo</a>
+            </div>
+
+            <div class="holo-card">
+                <div class="chat-bubble">
+                    <strong style="color: var(--primary);">Asistente:</strong> Buenos días. Detecté que tienes una reunión en 30 minutos. 
+                    El tráfico está ligero. ¿Quieres que prepare un resumen de tus emails prioritarios?
+                </div>
+                <div class="chat-bubble user">
+                    <strong style="color: var(--secondary);">Tú:</strong> Sí, y recuérdame llamar a mamá después
+                </div>
+                <div class="chat-bubble">
+                    <strong style="color: var(--primary);">Asistente:</strong> ✅ Listo. Resumen generado. Recordatorio configurado para las 11:00 AM. 
+                    También agregué leche a tu lista de compras porque detecté que se acaba.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Capacidades Neural</h2>
+            <p>Más que un chatbot. Un sistema cognitivo que evoluciona contigo.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>Memoria Contextual</h3>
+                <p>Recuerda cada conversación, preferencia y patrón. No repites información. Él ya lo sabe.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Ejecución Autónoma</h3>
+                <p>No solo responde. Actúa. Agenda citas, envía emails, compra online. Solo dale permiso.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔮</div>
+                <h3>Predicción Proactiva</h3>
+                <p>Anticipa tus necesidades antes de que las pidas. Como tener un asistente que lee tu mente.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Privacidad Absoluta</h3>
+                <p>Tus datos nunca salen de tu servidor. Encriptación de grado militar. Tú tienes el control total.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>Multi-Modal</h3>
+                <p>Texto, voz, imágenes, documentos. Comunícate como prefieras. Él entiende todos los formatos.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>Integración Total</h3>
+                <p>Conecta con 500+ apps. Google, Microsoft, Slack, Notion. Tu ecosistema digital unificado.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="section-header">
+            <h2>Planes de Conexión</h2>
+            <p>Elige tu nivel de integración neural</p>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>NEURAL LITE</h3>
+                <div class="price">$29<span>/mes</span></div>
+                
+                <ul class="pricing-features">
+                    <li>Memoria contextual básica</li>
+                    <li>500 mensajes/mes</li>
+                    <li>Recordatorios inteligentes</li>
+                    <li>Listas y notas</li>
+                    <li>Soporte email</li>
+                </ul>
+
+                <button class="btn-pricing secondary">Iniciar Conexión</button>
+            </div>
+
+            <div class="pricing-card featured">
+                <h3>NEURAL PRO</h3>
+                <div class="price">$59<span>/mes</span></div>
+                
+                <ul class="pricing-features">
+                    <li>Memoria avanzada ilimitada</li>
+                    <li>2,000 mensajes/mes</li>
+                    <li>Ejecución de tareas</li>
+                    <li>Integración calendario/email</li>
+                    <li>Predicción proactiva</li>
+                    <li>Soporte prioritario 24/7</li>
+                </ul>
+
+                <button class="btn-pricing primary">Activar Pro →</button>
+            </div>
+
+            <div class="pricing-card">
+                <h3>NEURAL MAX</h3>
+                <div class="price">$99<span>/mes</span></div>
+                
+                <ul class="pricing-features">
+                    <li>Todo lo de Pro</li>
+                    <li>Mensajes ilimitados</li>
+                    <li>Programación de código</li>
+                    <li>Automatizaciones avanzadas</li>
+                    <li>API access</li>
+                    <li>Soporte dedicado</li>
+                </ul>
+
+                <button class="btn-pricing secondary">Contactar Ventas</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 AIDESING AI. Neural Systems. <span style="color: var(--primary);">●</span> Online</p>
+    </footer>
+</body>
+</html>
